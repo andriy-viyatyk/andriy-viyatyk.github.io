@@ -20,10 +20,11 @@ repeats with no player; `DemoClip` renders a `.gif` as an image. The MP4 and its
 | `persephone-torrent-demo.mp4` | — (a real screen recording) | [fixtures/torrent-demo/scenes.js](fixtures/torrent-demo/scenes.js) | `/boards/torrent-viewer/` ([template](../src/pages/boards/%5Bid%5D.astro)) | recorded in Persephone, see its recipe |
 | `persephone-workspace-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `workspace-*.js` | `/persephone/workspace/` ([page](../src/content/docs/persephone/workspace/index.mdx)) | recorded in Persephone, see its recipe |
 | `persephone-install-board-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `install-board-*.js` | `/persephone/boards/installing/` ([page](../src/content/docs/persephone/boards/installing.mdx)) | recorded in Persephone, see its recipe |
+| `persephone-mneme-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `mneme-*.js` | `/persephone/mneme/` ([page](../src/content/docs/persephone/mneme/index.mdx)) | recorded in Persephone, see its recipe |
 | `persephone-site-extensions.mp4` | `SiteExtensions` | [src/persephone/SiteExtensions.tsx](src/persephone/SiteExtensions.tsx) | `/persephone/site-extensions/` ([page](../src/content/docs/persephone/site-extensions/index.mdx)) | `npm run render:site-extensions` |
 
-Three videos are the exception: `persephone-torrent-demo.mp4`, `persephone-workspace-demo.mp4` and
-`persephone-install-board-demo.mp4` are **real screen recordings** made by Persephone's own recorder
+Four videos are the exception: `persephone-torrent-demo.mp4`, `persephone-workspace-demo.mp4`,
+`persephone-install-board-demo.mp4` and `persephone-mneme-demo.mp4` are **real screen recordings** made by Persephone's own recorder
 (`window.screen.recording`), with a scripted cursor and tooltips drawn on top. Use that method when
 the point is live behavior (streaming, loading, a real install flow) that screenshots can't show;
 their recipes are at the end. The feature recordings run against the **demo data** profile (below),
@@ -465,6 +466,38 @@ The `.docx` is a fixture built by hand (OOXML parts zipped with `/` entry names:
 4. Copy to `out/persephone-install-board-demo.mp4`, `node scripts/finish.mjs persephone-install-board-demo 36`, then
    `node scripts/gif.mjs persephone-install-board-demo 960 12` (~5.5 MB).
    To retake, uninstall Word Viewer first.
+
+## Recipe: Mneme (screen recording, 67 s)
+
+**What it shows**: quick settings (**•••**) → the **Mneme** switch (callout) → the Mneme page opens by
+itself with "Model not loaded" (callout) → **Load model** → (recording paused through the download)
+→ model **ready** → **+ Add root** (callout) → Persephone's root-name prompt (callout) → **Add** →
+"8 docs" indexed (callout) → click the root → the search page → type "why does one station read
+too warm at night?" → **Rooftop station** ranks first (callout) → the note opens.
+
+Fixture: [fixtures/persephone/field-notes/](fixtures/persephone/field-notes), eight short notes
+copied to `C:\Demo\field-notes` by `demo-workspace.mjs`. The query shares almost no words with the
+rooftop note, which is the point of the clip.
+
+1. **Fresh Mneme state** — the Mneme page auto-opens only once per session, on a start with no
+   model, so every take needs: `scene.mjs mneme-reset.js` (turns Mneme off), close Persephone,
+   delete `%APPDATA%\persephone\data\mneme` and `C:\Demo\field-notes\.mneme`, and `npm start`.
+2. Reset, overlay, helpers (with the privacy mask: the model cache path shows the user name).
+3. **Take** — three calls, each waiting for its scene's done-flag (a script.execute call returns
+   early on a long wait or when a dialog opens, and the next scene would start too soon):
+   `scene.mjs --take mneme-1.js --wait __m1done`, `scene.mjs mneme-2.js --wait __m2done`,
+   `scene.mjs mneme-3.js --wait __m3done`. Scene 3 stops the recording; the temp path is in
+   `window.__m3result`.
+4. Copy to `out/persephone-mneme-demo.mp4`, `node scripts/finish.mjs persephone-mneme-demo 58`,
+   `node scripts/gif.mjs persephone-mneme-demo 960 12` (~5 MB).
+
+Gotchas: the model download takes 15–40 s; scene 1 **pauses** the recording after showing the
+progress bar and scene 2 resumes it, so no cut is needed. Adding the root before the model reads
+**ready** indexes without vectors and search falls back to text, so scene 1 waits for "ready", not
+for the files to show "verified". **+ Add root** opens the native folder picker, a separate OS
+window the recording cannot show: scene 2 replaces `app.fs.showFolderDialog` once to return the
+fixture folder. The search box is a contenteditable `[data-name="mneme-search-input"]`, and a
+result title is an `h3 a` with an icon inside (not a leaf, so `__ws.byText` misses it).
 
 ## Recipe: Site Extensions (`SiteExtensions`, 44 s)
 
