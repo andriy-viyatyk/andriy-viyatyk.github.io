@@ -1,38 +1,15 @@
-import { getCollection } from 'astro:content';
 import { defineRouteMiddleware } from '@astrojs/starlight/route-data';
 
-const RECENT_POST_COUNT = 5;
-
-type SidebarEntry = App.Locals['starlightRoute']['sidebar'][number];
+const DEFAULT_IMAGE = 'https://andriy-viyatyk.github.io/media/persephone-home.jpg';
 
 /**
- * The sidebar is the site's navigation and is the same on every page. The blog plugin replaces
- * it with blog-only links on its pages; this puts the site navigation back everywhere and lists
- * the most recent posts in the "Posts" group defined in astro.config.mjs.
+ * Gives every page a preview image for link cards on Reddit, X, Slack and the like. A page picks
+ * its own with an `og:image` meta in its frontmatter `head` (usually its demo clip's poster);
+ * pages without one get the home page's.
  */
-export const onRequest = defineRouteMiddleware(async (context, next) => {
-	const route = context.locals.starlightRoute;
-	const siteNavigation = route.sidebar;
-	await next();
-
-	const posts = (await getCollection('docs', (entry) => entry.id.startsWith('blog/') && !entry.data.draft))
-		.filter((entry) => entry.data.date)
-		.toSorted((a, b) => b.data.date!.getTime() - a.data.date!.getTime())
-		.slice(0, RECENT_POST_COUNT);
-
-	const currentPath = context.url.pathname.replace(/\/?$/, '/');
-	const recentPosts: SidebarEntry[] = posts.map((post) => {
-		const href = `/${post.id}/`;
-		return { type: 'link', label: post.data.title, href, isCurrent: href === currentPath, badge: undefined, attrs: {} };
-	});
-
-	// On other pages the plugin also adds its own top-level link to the blog into this same array;
-	// the "Posts" group already covers it.
-	route.sidebar = siteNavigation
-		.filter((entry) => !(entry.type === 'link' && entry.href === '/blog/'))
-		.map((entry) =>
-			entry.type === 'group' && entry.label === 'Posts'
-				? { ...entry, entries: [...entry.entries, ...recentPosts] }
-				: entry,
-		);
+export const onRequest = defineRouteMiddleware((context) => {
+	const { head } = context.locals.starlightRoute;
+	if (!head.some((tag) => tag.tag === 'meta' && tag.attrs?.property === 'og:image')) {
+		head.push({ tag: 'meta', attrs: { property: 'og:image', content: DEFAULT_IMAGE } });
+	}
 });

@@ -1,13 +1,12 @@
 # andriy-viyatyk.github.io
 
-Source of **https://andriy-viyatyk.github.io/** — demos, documentation and posts for
+Source of **https://andriy-viyatyk.github.io/** — demos and documentation for
 [Persephone](https://github.com/andriy-viyatyk/persephone),
 [persephone-boards](https://github.com/andriy-viyatyk/persephone-boards),
 [ai-vision](https://github.com/andriy-viyatyk/ai-vision) and
 [av-grid](https://github.com/andriy-viyatyk/av-grid).
 
-Built with [Astro](https://astro.build) + [Starlight](https://starlight.astro.build) and the
-[starlight-blog](https://github.com/HiDeoo/starlight-blog) plugin. Every push to `main` builds and
+Built with [Astro](https://astro.build) + [Starlight](https://starlight.astro.build). Every push to `main` builds and
 deploys through `.github/workflows/deploy.yml`.
 
 ## Layout
@@ -18,15 +17,34 @@ src/content/docs/        Markdown/MDX pages; the folder is the URL
   persephone/            /persephone/...
   ai-vision/             /ai-vision/...
   grid/                  /grid/...   (av-grid docs; /av-grid/ itself is the av-grid repo's live demo)
-  blog/                  /blog/...   posts (date, authors, tags in frontmatter)
 src/pages/boards/        /boards/ gallery and one page per board, generated from the
                          persephone-boards catalog (boards-manifest.json) at build time
 src/components/          DemoClip (looping clip) and YouTube (click-to-play video)
-astro.config.mjs         site title, sidebar, blog settings
+src/routeData.ts         default og:image for pages that do not set their own
+public/robots.txt        allows all crawlers, points them at the sitemap
+astro.config.mjs         site title, sidebar
 ```
 
 Path rule: a repo with its own GitHub Pages site owns `/<repo-name>/`, so this site must not put
 pages there (that is why av-grid docs live under `/grid/`).
+
+## Search and link previews
+
+Each page sets a search-friendly `<title>` and its preview image in frontmatter `head`; the
+visible `title` stays short for the sidebar and the page heading:
+
+```yaml
+description: One or two sentences with the words people search for (shown in results).
+head:
+  - tag: title
+    content: "Mneme – local semantic search over Markdown notes, with MCP"
+  - tag: meta
+    attrs:
+      property: og:image
+      content: https://andriy-viyatyk.github.io/media/persephone-mneme-demo.jpg
+```
+
+The sitemap is generated at build time and listed in `public/robots.txt`.
 
 ## Demo media (videos, GIFs)
 

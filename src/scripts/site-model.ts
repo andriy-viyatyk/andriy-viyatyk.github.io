@@ -118,7 +118,7 @@ const elementDeclarations = [
 	{ name: 'search', selector: 'site-search button[data-open-modal]', purpose: 'Opens the site search dialog.', where: 'Header, in the middle (a magnifier icon on narrow screens).' },
 	{ name: 'theme', selector: 'starlight-theme-select select', purpose: 'The colour theme picker: Dark, Light or Auto.', where: 'Header, right side.' },
 	{ name: 'github', selector: '.social-icons a[href*="github.com"]', purpose: 'Link to the author’s GitHub profile.', where: 'Header, right side.' },
-	{ name: 'sidebar', selector: 'nav.sidebar', purpose: 'Site navigation: Persephone, ai-vision, av-grid and Posts.', where: 'Left column (behind the menu button on narrow screens).' },
+	{ name: 'sidebar', selector: 'nav.sidebar', purpose: 'Site navigation: Persephone, ai-vision and av-grid.', where: 'Left column (behind the menu button on narrow screens).' },
 	{ name: 'toc', selector: 'starlight-toc', purpose: 'The “On this page” list of the current page’s sections.', where: 'Right column, on wide screens only.' },
 	{ name: 'content', selector: 'main .sl-markdown-content', purpose: 'The text of the current page.', where: 'Middle column.' },
 	{ name: 'demo-clip', selector: '.demo-clip', purpose: 'The first looping demo clip on the page.', where: 'Near the top of the page, when it has one.' },
@@ -135,7 +135,7 @@ function buildModel(index: SiteIndex) {
 			members: [
 				{ name: 'title', kind: 'property', summary: 'Page title.' },
 				{ name: 'path', kind: 'property', summary: 'Site path, such as "/persephone/workspace/".' },
-				{ name: 'section', kind: 'property', summary: 'Top-level area: home, persephone, ai-vision, grid, blog or boards.' },
+				{ name: 'section', kind: 'property', summary: 'Top-level area: home, persephone, ai-vision, grid or boards.' },
 				{ name: 'description', kind: 'property', summary: 'One-line description, or an empty string.' },
 				{ name: 'open', kind: 'method', signature: 'open()', summary: 'Navigate the browser tab to this page.' },
 			],

@@ -40,10 +40,15 @@ The status bar of a page that is reading a torrent shows its live peers and down
 const details = boardDetails[board.id];
 const demo = demoClips[board.id];
 const screenshot = demo ? undefined : screenshotUrl(board);
+// A board with a demo clip uses the clip's poster as its link-preview image.
+const head = [
+	{ tag: 'title' as const, content: `${board.name} – a Persephone board` },
+	...(demo ? [{ tag: 'meta' as const, attrs: { property: 'og:image', content: `https://andriy-viyatyk.github.io/media/${demo.src.replace(/.gif$/, '.jpg')}` } }] : []),
+];
 const sizeKb = Math.round(board.archive.size / 1024);
 ---
 
-<StarlightPage frontmatter={{ title: board.name, description: board.description }}>
+<StarlightPage frontmatter={{ title: board.name, description: board.description, head }}>
 	<p>{board.description}</p>
 
 	{demo && <DemoClip src={demo.src} caption={demo.caption} />}
