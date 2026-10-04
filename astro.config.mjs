@@ -10,6 +10,8 @@ export default defineConfig({
 		starlight({
 			title: 'Andriy Viyatyk',
 			description: 'Persephone, ai-vision, av-grid and Persephone boards: demos, documentation and posts.',
+			favicon: '/favicon.png',
+			head: [{ tag: 'link', attrs: { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' } }],
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/andriy-viyatyk' }],
 			plugins: [
 				starlightBlog({
