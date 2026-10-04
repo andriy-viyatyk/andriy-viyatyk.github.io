@@ -12,6 +12,7 @@ export default defineConfig({
 			description: 'Persephone, ai-vision, av-grid and Persephone boards: demos, documentation and posts.',
 			favicon: '/favicon.png',
 			head: [{ tag: 'link', attrs: { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' } }],
+			routeMiddleware: './src/routeData.ts',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/andriy-viyatyk' }],
 			plugins: [
 				starlightBlog({
