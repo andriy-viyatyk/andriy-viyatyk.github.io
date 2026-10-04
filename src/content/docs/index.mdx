@@ -4,11 +4,15 @@ description: Persephone, ai-vision, av-grid and Persephone boards — demos, doc
 tableOfContents: false
 hero:
   title: Tools for developers and their AI agents
-  tagline: A notepad that opens almost anything, the object model that lets agents drive it, a grid that handles 100,000 rows, and boards you can install or ask an agent to build.
+  tagline: Persephone is a free notepad for Windows that opens almost anything, and a workspace your AI agent can see and drive.
   actions:
     - text: Meet Persephone
       link: /persephone/
       icon: right-arrow
+    - text: Download
+      link: https://github.com/andriy-viyatyk/persephone/releases/latest
+      icon: external
+      variant: secondary
     - text: Read the posts
       link: /blog/
       icon: document
@@ -18,29 +22,36 @@ hero:
 import { CardGrid, LinkCard } from '@astrojs/starlight/components';
 import DemoClip from '../../components/DemoClip.astro';
 
-<DemoClip src="persephone-demo.mp4" poster="persephone-demo.jpg" caption="Persephone opening different kinds of files" />
+<DemoClip src="persephone-home.mp4" poster="persephone-home.jpg" caption="Workspaces, grids, boards and the built-in browser: a quick tour of Persephone" />
+
+## Why Persephone
+
+- **One app for every file.** Code, JSON, CSV, logs, Markdown, diagrams, archives, plus Word, Excel, PDF and SQLite on demand.
+- **Your AI agent works in it with you.** It opens grids, diagrams and documents to show you results, and it drives the app and the browser.
+- **Tools built on request.** Ask for a dashboard or a viewer, and the agent builds it as a board and tests it.
+- **Free, open source and local.** It runs on Windows and collects no usage data.
 
 ## Projects
 
 <CardGrid>
 	<LinkCard
 		title="Persephone"
-		description="A notepad for Windows that opens almost anything — and a workspace you share with AI agents."
+		description="A notepad for Windows that opens almost anything — and a workspace you share with your AI agent."
 		href="/persephone/"
 	/>
 	<LinkCard
 		title="Persephone boards"
-		description="Small apps an AI agent builds, opens and tests for you — plus installable viewers for Word, Excel, PDF, draw.io and SQLite."
+		description="Small apps your agent builds, opens and tests for you — plus installable Word, Excel, PDF, draw.io and SQLite viewers."
 		href="/persephone/boards/"
 	/>
 	<LinkCard
 		title="ai-vision"
-		description="An agent-facing object model: let an AI agent read and drive your app through one call tool."
+		description="One call tool that lets an AI agent read and drive an app. It powers Persephone's MCP server."
 		href="/ai-vision/"
 	/>
 	<LinkCard
 		title="av-grid"
-		description="A dependency-free virtualized data grid built for 100,000+ rows."
+		description="Persephone's data grid as a library: no dependencies, 100,000+ rows, Excel-style copy and paste."
 		href="/grid/"
 	/>
 </CardGrid>

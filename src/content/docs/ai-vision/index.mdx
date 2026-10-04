@@ -8,27 +8,30 @@ sidebar:
 
 import DemoClip from '../../../components/DemoClip.astro';
 
-**ai-vision** is an agent-facing object model over an application: a way to let an AI agent read
-and drive your app through named paths. It is not computer vision or image analysis. Your app
-exposes one `call` tool, and the agent discovers everything else from the object model itself.
+**ai-vision** lets an AI agent read and drive your app through one `call` tool and named paths
+(it is not computer vision). It is the engine behind [Persephone's](/persephone/) MCP server.
 
 <DemoClip src="ai-vision-demo.mp4" poster="ai-vision-demo.jpg" controls caption="How an AI agent sees Persephone: one call tool, named paths, and boards and web pages that plug their own models in" />
 
-## Why one `call` instead of many tools
+## Core features
 
-- **Discovery is incremental.** The agent calls `call` with no path, reads the overview, and descends
-  only into the branch the task is about.
-- **A tool per action does not scale.** A single self-describing object model replaces hundreds of
-  hand-written tools and costs nothing for the parts the agent is not looking at.
-- **A wrong path teaches the agent the right one.** Members are allow-listed, so an unknown name
-  returns the valid list plus "Did you mean …?".
+- **One tool, not hundreds.** A self-describing object model replaces a hand-written tool per action.
+- **Incremental discovery.** The agent reads a short overview and opens only the branch the task needs.
+- **Self-correcting.** Members are allow-listed, so a wrong path gets back the valid names and a "Did you mean …?" suggestion.
+- **Cheap on context.** Parts the agent doesn't look at cost nothing, so small models make few mistakes.
+- **Pluggable.** A board, a web page or another app can publish its own model into the same tree.
+- **Point at things on screen** and keep the agent up to date with an event log.
 
-It was built for [Persephone](/persephone/), where `call` replaced the entire MCP tool set.
+## See it in Persephone
 
-## Install
+With Persephone's MCP server enabled, your agent can open pages, edit documents, switch editors,
+drive the browser and install boards, all through `call`. Try it by asking your agent to open
+something in Persephone.
+
+## Use it in your app
 
 ```sh
 npm install ai-vision
 ```
 
-Source and full documentation: [github.com/andriy-viyatyk/ai-vision](https://github.com/andriy-viyatyk/ai-vision).
+Source and docs: [github.com/andriy-viyatyk/ai-vision](https://github.com/andriy-viyatyk/ai-vision).

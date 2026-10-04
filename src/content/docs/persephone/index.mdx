@@ -1,6 +1,6 @@
 ---
 title: Persephone
-description: A notepad for Windows that opens almost anything, built to be shared with AI agents.
+description: A free notepad for Windows that opens almost anything — and a workspace your AI agent can see and drive.
 sidebar:
   label: Overview
   order: 1
@@ -8,28 +8,39 @@ sidebar:
 
 import DemoClip from '../../../components/DemoClip.astro';
 
-**Persephone** is a notepad for Windows that opens almost anything. It starts exactly like a
-notepad — one empty text page — but drop in a JSON file, a Word document, a SQLite database, or a
-ZIP archive and it shows the content, not the bytes. And it is built to be shared with AI agents:
-everything you see on screen, an agent can see and drive too.
+**Persephone** starts like a notepad and opens almost anything: JSON, CSV, logs, Markdown, Word,
+Excel, PDF, SQLite, archives. It is also a workspace you share with your AI agent — everything you
+see on screen, the agent can see and drive too.
 
 <DemoClip src="persephone-platform.mp4" poster="persephone-platform.jpg" controls caption="A notepad on the outside, a platform on the inside: built-in editors, folders as workspace tabs, and a custom viewer an AI agent builds on request" />
 
-## One viewer for everything
+## Core features
 
-- **Built in** — code with syntax highlighting (Monaco, 50+ languages), JSON/CSV grids, Markdown,
-  Mermaid diagrams, SVG and HTML previews, images, audio/video, archives, side-by-side diffs, and more.
-- **Installable** — the [board catalog](/boards/) adds viewers and editors on demand: Word, Excel,
-  PowerPoint, PDF, draw.io diagrams, SQLite databases and more.
-- **Made to order** — if no viewer exists for your file, ask an AI agent to build one as a [board](/persephone/boards/).
+- **20+ built-in editors** — code (Monaco, 50+ languages), JSON/CSV grids, Markdown, Mermaid, SVG,
+  HTML, images, audio/video, archives, diffs, notebooks, drawings and a REST client.
+- **More on demand** — the [board catalog](/boards/) installs Word, Excel, PowerPoint, PDF, draw.io
+  and SQLite viewers.
+- **Built-in MCP server** — one `call` tool exposes the whole app to your AI agent ([ai-vision](/ai-vision/)).
+- **[Boards](/persephone/boards/)** — small apps your agent builds, opens and tests for you.
+- **Web browser** — profiles, incognito, Tor, bookmarks; the agent can drive web pages too.
+- **Scripting** — JavaScript/TypeScript with full Node.js access to transform any page.
+- **Also inside** — Git graph and diffs, encrypted files, Mneme agent memory (optional).
 
-## A workspace shared with AI agents
+## What you can do with it
 
-Persephone ships a built-in MCP server. It exposes a single tool, `call`, and behind it the whole
-application as one object model — pages, editors, files, the browser, boards — built on
-[ai-vision](/ai-vision/).
+- **Open whatever you were sent.** Logs, a ZIP, a `.docx`, a database — no hunting for the right app.
+- **Make sense of data.** Paste a JSON array or CSV, sort and filter it as a grid, copy it to Excel.
+- **Test an API.** Keep request collections in a `.rest.json` file next to your code.
+- **Get answers you can read.** Your agent opens a sortable grid, a diagram or rendered Markdown
+  instead of pasting walls of text into the chat.
+- **Get a tool built in a coffee break.** Ask your agent for a dashboard, a report viewer or a
+  viewer for an odd file format — it builds it as a board and checks that it works.
+- **Automate the boring part.** A few lines of script reformat, split or merge what is on screen.
+- **Work in the browser with your agent.** It reads, clicks and fills in pages in Persephone's
+  browser while you watch.
+- **Keep notes, links and sketches** in one place, encrypted when needed.
 
 ## Get it
 
-Download the latest installer from
+Free and open source, for Windows: download the installer or portable ZIP from
 [GitHub Releases](https://github.com/andriy-viyatyk/persephone/releases/latest).

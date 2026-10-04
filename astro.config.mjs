@@ -27,6 +27,7 @@ export default defineConfig({
 				}),
 			],
 			sidebar: [
+				{ label: 'Home', link: '/' },
 				{
 					// One sub-group per core feature, each in its own folder under persephone/.
 					label: 'Persephone',

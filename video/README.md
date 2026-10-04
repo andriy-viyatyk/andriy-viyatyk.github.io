@@ -11,9 +11,10 @@ video can be updated by editing text or swapping one screenshot, instead of re-r
 | `boards-todo-demo.mp4` | `BoardsTodo` | [src/boards/BoardsTodo.tsx](src/boards/BoardsTodo.tsx) | `/persephone/boards/` ([page](../src/content/docs/persephone/boards/index.mdx)) | `npm run render:boards-todo` |
 | `persephone-platform.mp4` | `Platform` | [src/persephone/Platform.tsx](src/persephone/Platform.tsx) | `/persephone/` ([page](../src/content/docs/persephone/index.mdx)) | `npm run render:platform` |
 | `av-grid-demo.mp4` | `AvGrid` | [src/av-grid/AvGrid.tsx](src/av-grid/AvGrid.tsx) | `/grid/` ([page](../src/content/docs/grid/index.mdx)) | `npm run render:av-grid` |
+| `persephone-home.mp4` | `HomeLoop` | [src/persephone/HomeLoop.tsx](src/persephone/HomeLoop.tsx) | `/` ([page](../src/content/docs/index.mdx)) | `npm run render:home` |
 
-`persephone-demo.mp4` (the home page) is **not** made here. It is the author's own screen
-capture, converted from a GIF with ffmpeg. Ask the author for a new capture if it needs updating.
+`persephone-demo.mp4`, the author's own screen capture, was the home-page clip before
+`persephone-home.mp4`. It is still in the `media` release as a backup.
 
 ## Layout
 
@@ -282,6 +283,34 @@ editor with `app.pages.findPage(id).editor` (`pages` is not a script global) and
 The clipboard is never touched, so the user's OS clipboard stays as it was: paste goes through
 `pasteText`, and the menu is only opened, never clicked. The render uses `--crf 25`, not 20: the
 dense table screenshots made a 36 MB file at 20, and 17.5 MB at 25 looks the same.
+
+## Recipe: home loop (`HomeLoop`, 45 s)
+
+**What it shows**: a silent loop for the home page, which plays it like a GIF: autoplay, loop, no
+controls. Eight screens cross-fade, each with a feature card that springs in at the bottom left:
+the notepad with a title card; the website workspace, zoomed on the **Explorer**, then panned to
+Markdown + Mermaid; JSON as a grid; Excalidraw; the workspace **Boards panel** (zoom), then the
+Color Palette board; the Budget viewer, zoomed on the editor switch; the built-in browser on the
+site's board catalog; and the notepad again with a closing card. The last frame equals the first,
+so the loop has no jump. Every frame number in the file is global, and each slide has its own
+camera keys.
+
+**Screenshots**: it reuses `p-notepad`, `p-ws-website`, `p-json-grid`, `p-excalidraw` and
+`p-budget-viewer` from the Platform recipe, plus two of its own:
+
+- `h-palette.png`: `C:\Demo\website` as a workspace tab with **Boards** open in its Explorer
+  (`panels.explorer.openBoards()`). The Color Palette board (a copy of the author's, in
+  `C:\Demo\website\.persephoneoards\Color Palette`) is opened by clicking its row in the panel.
+  `pages.navigatePageTo(id, boardFolder)` opens the folder as text, so don't use it.
+  `boards.registerBoard` shows a trust dialog the author has to click. A Demo board
+  (`boards.createDemoBoard`) is next to it in the panel.
+- `h-browser.png`: a browser tab on `https://andriy-viyatyk.github.io/boards/`.
+
+**Render**: `npm run render:home`. It makes the MP4 (crf 23, ~7 MB), the poster and
+`out/persephone-home.gif`, which comes from [scripts/gif.mjs](scripts/gif.mjs). The GIF is a
+two-pass palette encode, 560 px at 12 fps, ~13.5 MB. It is for places where video does not play
+(a GitHub README); the site uses the MP4. A sharp GIF at full column width would be 35–40 MB.
+Remotion's ffmpeg has no `fps` filter, so the script sets the frame rate with `-r`.
 
 ## Publishing
 

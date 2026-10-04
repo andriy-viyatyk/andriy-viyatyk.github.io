@@ -1,22 +1,23 @@
 {
-  "name": "site-videos",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "studio": "remotion studio",
-    "render:ai-vision": "remotion render AiVision out/ai-vision-demo.mp4 --codec h264 --crf 20 --pixel-format yuv420p && node scripts/finish.mjs ai-vision-demo 4",
-    "render:boards-todo": "remotion render BoardsTodo out/boards-todo-demo.mp4 --codec h264 --crf 20 --pixel-format yuv420p && node scripts/finish.mjs boards-todo-demo 4.5",
-    "render:platform": "remotion render Platform out/persephone-platform.mp4 --codec h264 --crf 20 --pixel-format yuv420p && node scripts/finish.mjs persephone-platform 4",
-    "render:av-grid": "remotion render AvGrid out/av-grid-demo.mp4 --codec h264 --crf 25 --pixel-format yuv420p && node scripts/finish.mjs av-grid-demo 4"
-  },
-  "dependencies": {
-    "@remotion/cli": "4.0.532",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "remotion": "4.0.532"
-  },
-  "devDependencies": {
-    "@types/react": "^19.0.0",
-    "typescript": "^5.6.0"
-  }
+	"name": "site-videos",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"studio": "remotion studio",
+		"render:ai-vision": "remotion render AiVision out/ai-vision-demo.mp4 --codec h264 --crf 20 --pixel-format yuv420p && node scripts/finish.mjs ai-vision-demo 4",
+		"render:boards-todo": "remotion render BoardsTodo out/boards-todo-demo.mp4 --codec h264 --crf 20 --pixel-format yuv420p && node scripts/finish.mjs boards-todo-demo 4.5",
+		"render:platform": "remotion render Platform out/persephone-platform.mp4 --codec h264 --crf 20 --pixel-format yuv420p && node scripts/finish.mjs persephone-platform 4",
+		"render:av-grid": "remotion render AvGrid out/av-grid-demo.mp4 --codec h264 --crf 25 --pixel-format yuv420p && node scripts/finish.mjs av-grid-demo 4",
+		"render:home": "remotion render HomeLoop out/persephone-home.mp4 --codec h264 --crf 23 --pixel-format yuv420p && node scripts/finish.mjs persephone-home 2 && node scripts/gif.mjs persephone-home"
+	},
+	"dependencies": {
+		"@remotion/cli": "4.0.532",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"remotion": "4.0.532"
+	},
+	"devDependencies": {
+		"@types/react": "^19.0.0",
+		"typescript": "^5.6.0"
+	}
 }

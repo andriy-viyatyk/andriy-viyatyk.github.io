@@ -8,14 +8,21 @@ sidebar:
 
 import DemoClip from '../../../components/DemoClip.astro';
 
-**av-grid** is the data grid from [Persephone](/persephone/), extracted into a standalone library.
-It is virtualized and renders straight to the DOM, with **no runtime dependencies and no
-framework**, and it handles **100,000+ rows** while you scroll, select a range or edit.
+**av-grid** is the data grid from [Persephone](/persephone/), released as its own library. It has
+**no dependencies**, works without a framework, and stays smooth with **100,000+ rows**.
 
-**[▶ Live demo](https://andriy-viyatyk.github.io/av-grid/)** — seventeen examples in the browser, including a 100,000-row benchmark
-you can run yourself.
+**[▶ Live demo](https://andriy-viyatyk.github.io/av-grid/)** has seventeen examples, including a 100,000-row benchmark.
 
 <DemoClip src="av-grid-demo.mp4" poster="av-grid-demo.jpg" controls caption="100,000 rows with custom cells, pinned columns and a totals row: range selection, Excel-style copy and paste, editing, filtering, search and theming" />
+
+## Core features
+
+- **Virtualized on both axes.** Columns are pinned on either edge, footer rows are pinned, and columns can be grouped.
+- **Excel-style work.** You get range selection, keyboard navigation, and copy, cut and paste. Copy also works as JSON or as an HTML table.
+- **Editing.** Cells are validated, columns with `options` get dropdowns, and rows and columns can be added or deleted.
+- **Sorting, filtering and search.** It can also use server-side data.
+- **Custom cells**, a context menu you can extend, and resizable, reorderable columns.
+- **Themed with CSS custom properties.** There's no build step and no CSS-in-JS.
 
 ```js
 import { AVGrid } from "av-grid";
@@ -23,7 +30,11 @@ import { AVGrid } from "av-grid";
 const grid = AVGrid.create("#host", { rows: data });
 ```
 
-That is the whole minimum call. Columns, header labels, widths, data types, alignment and row keys
-are all inferred from the rows.
+Columns, widths, data types and alignment are inferred from the rows.
 
-Source and full documentation: [github.com/andriy-viyatyk/av-grid](https://github.com/andriy-viyatyk/av-grid).
+## Already in Persephone
+
+Open any `.json`, `.csv` or `.jsonl` file in [Persephone](/persephone/) and it opens in this grid.
+Sort it, filter it, paste from Excel, and copy back.
+
+Source and docs: [github.com/andriy-viyatyk/av-grid](https://github.com/andriy-viyatyk/av-grid).

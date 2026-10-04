@@ -8,13 +8,9 @@ sidebar:
 
 import DemoClip from '../../../../components/DemoClip.astro';
 
-A **board** is a small app that lives in a folder: an HTML page for the UI, and optional scripts
-for the work the page cannot do on its own. Persephone opens it in a tab like any other page. There
-is no build step, no framework and no server to start — a folder with an HTML file is a working app.
-
-What makes boards different is who builds them. Persephone exposes the whole application to AI
-agents, so an agent can write a board, open it, click through it, fix what it finds and hand you
-a tool that already works.
+A **board** is a small app in a folder: an HTML page plus optional scripts. Persephone opens it in
+a tab like any other page. Your AI agent can write a board, open it, click through it, fix what it
+finds, and hand you a tool that already works.
 
 <DemoClip
 	src="boards-todo-demo.mp4"
@@ -23,56 +19,25 @@ a tool that already works.
 	caption="A real session: asked for a todo board, Claude reads the guide, writes the board, opens it and tests it — then adds priorities and due dates on a follow-up request."
 />
 
-## What a board is made of
+## Core features
 
-| Part | What it is |
-|---|---|
-| **Frontend** | `index.html` with your own CSS and JavaScript. It owns all of the UI and all of the state. |
-| **Backend** (optional) | Scripts in any language — `.js`, `.py`, `.ps1`, `.sh` — that run as real programs on your machine. Persephone also ships its own Node runtime, so a JavaScript backend works with nothing installed. |
-| **Bridge** | One object, `window.persephone`. The page runs a script and reads its JSON output, reads and writes files, shows notifications, and opens results in other Persephone editors. |
+- **Just a folder.** `index.html` with your own CSS and JavaScript. There's no build step, no framework and no server.
+- **Real backend scripts.** `.js`, `.py`, `.ps1` and `.sh` scripts run on your machine. Persephone ships Node, so JavaScript works without installing anything.
+- **One bridge.** `window.persephone` runs scripts, reads and writes files, and opens results in other editors.
+- **Built and tested by the agent.** Through the MCP server it creates, opens, clicks, screenshots and reloads the board until it works.
+- **Boards as editors.** A board can claim `*.xlsx`, `*.drawio` or `*.db`, and Persephone offers it next to the built-in editors.
+- **Safe by default.** A board runs only after you trust it, and it gets only the permissions it declares, such as running programs, file access or network. Catalog downloads are checksum-verified.
 
-```js
-// The page asks a script for data and renders it — that is the whole contract.
-const items = await persephone.executeNode("scripts/load.mjs").getJson();
-render(items);
-```
+## What you can build
 
-## Built and tested by an agent
-
-Through Persephone's MCP server an agent drives the full loop itself, with no clicks from you:
-
-1. **Create** the board — it is scaffolded and trusted in one step.
-2. **Write** the page and scripts.
-3. **Open** it in a tab.
-4. **Test** it like a user: read the page, click, type, take screenshots.
-5. **Reload** and repeat until it works — then check the result where it really lives, such as the
-   file the board saved.
-
-The agent goes from "writes code you then have to run" to "builds, runs and verifies a small app
-in one go." Dashboards, report viewers, internal tools and file viewers are all just a folder.
-
-## Boards as editors
-
-A board can declare the files it opens — `*.xlsx`, `*.drawio`, `*.db` — and Persephone then offers
-it as the editor for those files, next to the built-in ones. That is how the
-[published boards](/boards/) add Word, Excel, PowerPoint, PDF, draw.io and SQLite viewers: open a
-matching file and Persephone offers to install the board. Each download is checked against its
-published checksum before it runs.
-
-## Safe by default
-
-- **Trust first.** A board you or your agent created is trusted when it is created. Any other board
-  asks before it runs.
-- **Permissions.** Each board declares what it needs — running programs, file access, network,
-  controlling Persephone — and the trust dialog lists exactly that. Anything not declared is denied,
-  and access that reaches everything your account can is marked **Full access**.
-- **Review on request.** Not sure about a board? Ask your agent to review its scripts before you
-  trust it.
+- **A dashboard** for your build, your tickets or your server logs.
+- **A viewer** for a file format nothing else opens.
+- **A project helper** that deploys, seeds a database or cleans up a folder in one click.
+- **A personal tool**: a todo list, a tracker or a report that stores its data next to it.
 
 ## Try it
 
-- **Ask your agent:** with Persephone's MCP server enabled, ask for the tool you want — "make me a
-  todo list that stores its data in the board folder."
-- **Do it yourself:** open a folder in the **Explorer**, click **Boards**, then **New board**. The
-  caret next to it creates a full **Demo board** to explore.
-- **Install one:** browse the [board catalog](/boards/).
+- **Ask your agent:** "make me a todo list that stores its data in the board folder."
+- **Do it yourself:** in the **Explorer**, click **Boards**, then **New board**. The caret next to
+  it creates a full **Demo board** to explore.
+- **Install one** from the [board catalog](/boards/).
