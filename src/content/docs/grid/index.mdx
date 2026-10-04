@@ -6,12 +6,16 @@ sidebar:
   order: 1
 ---
 
+import DemoClip from '../../../components/DemoClip.astro';
+
 **av-grid** is the data grid from [Persephone](/persephone/), extracted into a standalone library.
 It is virtualized and renders straight to the DOM, with **no runtime dependencies and no
 framework**, and it handles **100,000+ rows** while you scroll, select a range or edit.
 
 **[▶ Live demo](https://andriy-viyatyk.github.io/av-grid/)** — seventeen examples in the browser, including a 100,000-row benchmark
 you can run yourself.
+
+<DemoClip src="av-grid-demo.mp4" poster="av-grid-demo.jpg" controls caption="100,000 rows with custom cells, pinned columns and a totals row: range selection, Excel-style copy and paste, editing, filtering, search and theming" />
 
 ```js
 import { AVGrid } from "av-grid";

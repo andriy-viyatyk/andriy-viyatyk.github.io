@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>av-grid showcase</title>
+<!-- The page the av-grid video is captured from. Generic, generated data only.
+     Open it over http(s) or file://; av-grid comes from jsDelivr. ?theme=dark for the dark shot. -->
+<style>
+    :root {
+        --p-text: #1f2328;
+        --p-text-muted: #6e7781;
+        --p-text-strong: #0b0d10;
+        --p-bg: #ffffff;
+        --p-bg-dark: #f3f5f8;
+        --p-border-light: #e6e9ee;
+        --p-accent: #2563eb;
+        --p-selection-bg: #dbe7ff;
+        --p-font-family: "Segoe UI", system-ui, sans-serif;
+        --p-font-base: 13px;
+        --good: #15803d; --bad: #b91c1c; --warn: #b45309;
+        --pill-a: #e0ecff; --pill-a-t: #1d4ed8;
+        --pill-b: #e9f8ee; --pill-b-t: #15803d;
+        --pill-c: #fff1e0; --pill-c-t: #b45309;
+        --pill-d: #f3e8ff; --pill-d-t: #7e22ce;
+        --bar-bg: #e8ecf2;
+    }
+    :root[data-theme="dark"] {
+        --p-text: #d6dae0;
+        --p-text-muted: #8b949e;
+        --p-text-strong: #ffffff;
+        --p-bg: #16181d;
+        --p-bg-dark: #101216;
+        --p-border-light: #262a31;
+        --p-accent: #4cc2ff;
+        --p-selection-bg: #1e3a5f;
+        --good: #4ade80; --bad: #f87171; --warn: #fbbf24;
+        --pill-a: #1e2f4d; --pill-a-t: #93c5fd;
+        --pill-b: #163222; --pill-b-t: #86efac;
+        --pill-c: #3a2a12; --pill-c-t: #fcd34d;
+        --pill-d: #2e1f45; --pill-d-t: #d8b4fe;
+        --bar-bg: #2a2f38;
+    }
+    html, body { height: 100%; }
+    body { margin: 0; display: flex; flex-direction: column; background: var(--p-bg);
+           color: var(--p-text); font: 13px "Segoe UI", system-ui, sans-serif; }
+    header { display: flex; align-items: center; gap: 14px; padding: 12px 16px;
+             border-bottom: 1px solid var(--p-border-light); background: var(--p-bg-dark); }
+    header h1 { margin: 0; font-size: 16px; font-weight: 600; color: var(--p-text-strong); }
+    header .meta { color: var(--p-text-muted); }
+    header input { margin-left: auto; width: 240px; padding: 6px 10px; font: inherit; color: var(--p-text);
+                   background: var(--p-bg); border: 1px solid var(--p-border-light); border-radius: 6px; }
+    #bar { padding: 0 8px; }
+    #host { flex: 1 1 auto; min-height: 0; }
+
+    .pill { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; line-height: 18px; }
+    .c-Audio { background: var(--pill-a); color: var(--pill-a-t); }
+    .c-Office { background: var(--pill-b); color: var(--pill-b-t); }
+    .c-Gaming { background: var(--pill-d); color: var(--pill-d-t); }
+    .c-Storage { background: var(--pill-c); color: var(--pill-c-t); }
+    .status::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+                      margin-right: 6px; background: currentColor; }
+    .s-Active { color: var(--good); }
+    .s-Backorder { color: var(--warn); }
+    .s-Discontinued { color: var(--p-text-muted); }
+    .bar { display: flex; align-items: center; gap: 8px; width: 100%; }
+    .bar i { flex: 1; height: 8px; border-radius: 4px; background: var(--bar-bg); overflow: hidden; }
+    .bar b { display: block; height: 100%; border-radius: 4px; background: var(--p-accent); }
+    .bar b.done { background: var(--good); }
+    .bar span { width: 38px; text-align: right; font-variant-numeric: tabular-nums; }
+    .up { color: var(--good); } .down { color: var(--bad); }
+    .stars { color: #f59e0b; letter-spacing: 1px; }
+    .stars s { color: var(--bar-bg); text-decoration: none; }
+    .muted-row, .muted-row .num, .muted-row .pill, .muted-row .up, .muted-row .down { color: var(--p-text-muted); }
+    .grand-total { font-weight: 600; color: var(--p-text-strong); }
+    .num { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<header>
+    <h1>Product sales</h1>
+    <span class="meta" id="meta"></span>
+    <input id="search" placeholder="Search every column…">
+</header>
+<div id="bar"></div>
+<div id="host"></div>
+<script type="module">
+    import { AVGrid } from "https://cdn.jsdelivr.net/npm/av-grid@2.12.1/dist/av-grid.js";
+
+    if (new URLSearchParams(location.search).get("theme") === "dark") {
+        document.documentElement.dataset.theme = "dark";
+    }
+
+    const COUNT = Number(new URLSearchParams(location.search).get("rows") || 100000);
+    const ITEMS = [
+        ["Wireless Mouse", "Office"], ["Mechanical Keyboard", "Office"], ["USB-C Hub", "Office"],
+        ["Desk Lamp", "Office"], ["Noise-Cancelling Headphones", "Audio"], ["Bluetooth Speaker", "Audio"],
+        ["Studio Microphone", "Audio"], ["Earbuds", "Audio"], ["Game Controller", "Gaming"],
+        ["Gaming Headset", "Gaming"], ["Racing Wheel", "Gaming"], ["Portable SSD", "Storage"],
+        ["Memory Card", "Storage"], ["External Drive", "Storage"], ["NAS Enclosure", "Storage"],
+    ];
+    const VARIANTS = ["", " Pro", " Mini", " Max", " Lite", " 2", " Plus"];
+    const REGIONS = ["North", "South", "East", "West", "Central"];
+    const STATUS = ["Active", "Active", "Active", "Active", "Backorder", "Discontinued"];
+
+    let seed = 7;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const base = new Date(2026, 8, 30).getTime();
+
+    const rows = Array.from({ length: COUNT }, (_, i) => {
+        const [name, category] = ITEMS[Math.floor(rnd() * ITEMS.length)];
+        const price = 12 + Math.round(rnd() * 240);
+        const q1 = 20 + Math.round(rnd() * 480);
+        const q2 = Math.max(0, Math.round(q1 * (0.7 + rnd() * 0.6)));
+        return {
+            id: i + 1,
+            sku: `SKU-${String(i + 1).padStart(6, "0")}`,
+            product: name + VARIANTS[Math.floor(rnd() * VARIANTS.length)],
+            category,
+            region: REGIONS[Math.floor(rnd() * REGIONS.length)],
+            status: STATUS[Math.floor(rnd() * STATUS.length)],
+            q1Units: q1, q1Revenue: q1 * price,
+            q2Units: q2, q2Revenue: q2 * price,
+            growth: Math.round(((q2 - q1) / q1) * 1000) / 10,
+            target: Math.min(1, Math.round((0.25 + rnd() * 0.85) * 100) / 100),
+            rating: 1 + Math.floor(rnd() * 5),
+            updated: new Date(base - Math.floor(rnd() * 120) * 86400000).toISOString().slice(0, 10),
+            total: (q1 + q2) * price,
+        };
+    });
+
+    const money = (v) => "$" + Math.round(v).toLocaleString("en-US");
+    const totals = (list) => {
+        const sum = (k) => list.reduce((a, r) => a + r[k], 0);
+        return { sku: "Total", product: `${list.length.toLocaleString("en-US")} products`,
+            q1Units: sum("q1Units"), q1Revenue: sum("q1Revenue"),
+            q2Units: sum("q2Units"), q2Revenue: sum("q2Revenue"), total: sum("total") };
+    };
+
+    const moneyCol = (key, name, group, extra = {}) => ({
+        key, name, group, width: 104, dataType: "number", align: "right",
+        render: (c) => (c.value == null ? "" : `<span class="num">${money(c.value)}</span>`),
+        copyValue: (row) => (row[key] == null ? "" : String(row[key])),
+        ...extra,
+    });
+    const unitsCol = (key, group) => ({ key, name: "Units", group, width: 74, dataType: "number", align: "right",
+        render: (c) => (c.value == null ? "" : `<span class="num">${c.value.toLocaleString("en-US")}</span>`) });
+
+    const grid = AVGrid.create("#host", {
+        rows,
+        rowHeight: 30,
+        selectColumn: true,
+        editable: true,
+        filterBar: false,
+        rowNoun: "product",
+        columns: [
+            { key: "sku", name: "SKU", width: 112, pinned: "left", readonly: true },
+            { key: "product", name: "Product", width: 210 },
+            { key: "category", name: "Category", width: 96,
+              render: (c) => (c.value ? `<span class="pill c-${c.value}">${c.value}</span>` : "") },
+            { key: "region", name: "Region", width: 80, options: REGIONS },
+            { key: "status", name: "Status", width: 120, options: ["Active", "Backorder", "Discontinued"],
+              render: (c) => (c.value ? `<span class="status s-${c.value}">${c.value}</span>` : "") },
+            unitsCol("q1Units", "Q1"), moneyCol("q1Revenue", "Revenue", "Q1"),
+            unitsCol("q2Units", "Q2"), moneyCol("q2Revenue", "Revenue", "Q2"),
+            { key: "growth", name: "Growth", width: 80, dataType: "number", align: "right",
+              render: (c) => c.value == null ? "" :
+                  `<span class="${c.value >= 0 ? "up" : "down"}">${c.value >= 0 ? "▲" : "▼"} ${Math.abs(c.value).toFixed(1)}%</span>` },
+            { key: "target", name: "Target", width: 140, dataType: "number",
+              render: (c) => c.value == null ? "" : `<span class="bar"><i><b class="${c.value >= 1 ? "done" : ""}" style="width:${Math.round(c.value * 100)}%"></b></i><span>${Math.round(c.value * 100)}%</span></span>`,
+              copyValue: (row) => `${Math.round(row.target * 100)}%` },
+            { key: "rating", name: "Rating", width: 92, dataType: "number",
+              render: (c) => c.value == null ? "" : `<span class="stars">${"★".repeat(c.value)}<s>${"★".repeat(5 - c.value)}</s></span>` },
+            { key: "updated", name: "Updated", width: 100, displayFormat: "date" },
+            moneyCol("total", "Total", undefined, { pinned: "right", width: 112 }),
+        ],
+        footerRows: [totals(rows)],
+        footerRowClass: () => "grand-total",
+        // Keep the derived Growth and Total columns in step with edits and pastes.
+        onEdit: (e) => {
+            setTimeout(() => {
+                const r = grid.getRows().find((x) => String(x.id) === e.rowKey);
+                if (!r) return;
+                r.growth = Math.round(((r.q2Units - r.q1Units) / r.q1Units) * 1000) / 10;
+                r.total = r.q1Revenue + r.q2Revenue;
+                grid.setOptions({ footerRows: [totals(grid.getVisibleRows())] });
+                grid.refresh();
+            });
+        },
+        rowClass: (r) => (r.row.status === "Discontinued" ? "muted-row" : undefined),
+        onVisibleRowsChange: (visible) => {
+            // The totals row sums what is on screen, so it follows the filters.
+            if (window.grid) window.grid.setOptions({ footerRows: [totals(visible)] });
+            document.getElementById("meta").textContent =
+                `${visible.length.toLocaleString("en-US")} of ${rows.length.toLocaleString("en-US")} products`;
+        },
+    });
+
+    AVGrid.createFilterBar(document.getElementById("bar"), { grid });
+    document.getElementById("search").addEventListener("input", (e) => grid.setSearchString(e.target.value));
+    document.getElementById("meta").textContent = `${rows.length.toLocaleString("en-US")} products`;
+    window.grid = grid;
+</script>
+</body>
+</html>

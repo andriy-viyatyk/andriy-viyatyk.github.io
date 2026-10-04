@@ -10,6 +10,7 @@ video can be updated by editing text or swapping one screenshot, instead of re-r
 | `ai-vision-demo.mp4` | `AiVision` | [src/ai-vision/AiVision.tsx](src/ai-vision/AiVision.tsx) | `/ai-vision/` ([page](../src/content/docs/ai-vision/index.mdx)) | `npm run render:ai-vision` |
 | `boards-todo-demo.mp4` | `BoardsTodo` | [src/boards/BoardsTodo.tsx](src/boards/BoardsTodo.tsx) | `/persephone/boards/` ([page](../src/content/docs/persephone/boards/index.mdx)) | `npm run render:boards-todo` |
 | `persephone-platform.mp4` | `Platform` | [src/persephone/Platform.tsx](src/persephone/Platform.tsx) | `/persephone/` ([page](../src/content/docs/persephone/index.mdx)) | `npm run render:platform` |
+| `av-grid-demo.mp4` | `AvGrid` | [src/av-grid/AvGrid.tsx](src/av-grid/AvGrid.tsx) | `/grid/` ([page](../src/content/docs/grid/index.mdx)) | `npm run render:av-grid` |
 
 `persephone-demo.mp4` (the home page) is **not** made here. It is the author's own screen
 capture, converted from a GIF with ffmpeg. Ask the author for a new capture if it needs updating.
@@ -235,6 +236,52 @@ re-recording the session** (and `boards.unregisterBoard` it), or the CSV already
 5. Screenshot → `p-budget-viewer`; navigate the tab to `2026-08.budget.csv` → `p-budget-aug`.
 6. Put the agent's REPLY/LOG into `ASK`, `BUILD_STEPS`, `REPLY` in `Platform.tsx` (shortened).
    Backslashes in those strings must be doubled (`\`), or JavaScript eats them (`\b` is a backspace).
+
+## Recipe: av-grid (`AvGrid`, 90 s)
+
+Not a Persephone video: it shows the standalone library. The screenshots are the bare web page,
+with no Persephone chrome, taken with the browser page's own `editor.screenshot()`.
+
+**What it shows**: the one-line minimum call; a rich grid of 100,000 rows: `render` cells (pills,
+status dots, ▲/▼ growth, progress bars, stars), column `group` headers, `pinned` left/right
+columns, `footerRows` totals, `selectColumn`, and `rowClass` for muted rows; scrolling to row
+99,000 with the pinned columns holding, plus the README's measured numbers (~6 ms first paint,
+60 fps, 2 cells per drag move); range selection by real drag; the context menu with the Copy as…
+submenu; paste (`pasteText`) of a 5×2 block from one focused cell, with Growth and Total
+recomputed; the `options` dropdown editor; the filter popover, the filter-chip bar, sorting, search
+highlighting, and the totals row following the filter; the dark theme from `--p-*` tokens; and a
+card listing the seven hooks and the main options.
+
+**Page**: [fixtures/av-grid/showcase.html](fixtures/av-grid/showcase.html). It imports
+`av-grid@2.12.1` from jsDelivr and works over `file://`; `?theme=dark` switches the tokens.
+It holds 100,000 generated products with a fixed seed, so every capture has the same rows. Its
+`onEdit` recomputes the derived columns and the totals row; `onVisibleRowsChange` makes the
+totals row sum only the visible rows.
+
+**Capture**: `window.openNew()` → window N, then `script.execute` `window.resizeTo(1340,1046)`. That
+makes the browser page area exactly 1296x968; check with `editor.evaluate("() => [innerWidth,
+innerHeight]")`. Do not use `setViewport`: emulating a size larger than the webview tiles the
+screenshot. `pages.openUrlInBrowserTab("file:///…/showcase.html")`. In a `script.execute`, get the
+editor with `app.pages.findPage(id).editor` (`pages` is not a script global) and save with
+`app.fs.writeBinary(path, Buffer.from((await ed.screenshot()).data, "base64"))`. Cells are addressed as
+`[data-row="R"][data-column-key="key"]`.
+
+| Shot | How |
+|---|---|
+| `g-grid` | fresh load |
+| `g-scroll` | `grid.scrollToRow(98990,"top")`, then the scroller's `scrollLeft = 10000` |
+| `g-range-a`, `g-range` | `ed.drag(row 3 q1Units → row 6 q1Revenue)`, then `→ row 9 q2Revenue` (real drag) |
+| `g-menu`, `g-menu2` | `ed.click(cell, {button:"right"})`; `ed.hover('[data-id="avg-copy-as"]')` opens the submenu |
+| `g-paste-a`, `g-paste` | reload; click row 12 q2Units; `grid.pasteText("36\t8388\n52\t7644\n470\t83190\n455\t85085\n392\t36064")` |
+| `g-dropdown` | click row 5 status, `pressKey("Enter")` |
+| `g-filter-pop` | reload; `grid.showFilterPopover("category")` (do not await it), tick Gaming |
+| `g-filter` | Escape; `applyFilter` category `["Gaming"]`, region `["North","East"]`; `setSort({key:"total",direction:"desc"})` |
+| `g-search` | `ed.type("#search","pro")` |
+| `g-dark` | `?theme=dark`; `grid.setSelected(["2","4","5"])`; drag row 8 q1Units → row 13 q2Revenue; blur, then hover `h1` |
+
+The clipboard is never touched, so the user's OS clipboard stays as it was: paste goes through
+`pasteText`, and the menu is only opened, never clicked. The render uses `--crf 25`, not 20: the
+dense table screenshots made a 36 MB file at 20, and 17.5 MB at 25 looks the same.
 
 ## Publishing
 
