@@ -300,7 +300,7 @@ camera keys.
 
 - `h-palette.png`: `C:\Demo\website` as a workspace tab with **Boards** open in its Explorer
   (`panels.explorer.openBoards()`). The Color Palette board (a copy of the author's, in
-  `C:\Demo\website\.persephoneboards\Color Palette`) is opened by clicking its row in the panel.
+  `C:\Demo\website\.persephone\boards\Color Palette`) is opened by clicking its row in the panel.
   `pages.navigatePageTo(id, boardFolder)` opens the folder as text, so don't use it.
   `boards.registerBoard` shows a trust dialog the author has to click. A Demo board
   (`boards.createDemoBoard`) is next to it in the panel.
