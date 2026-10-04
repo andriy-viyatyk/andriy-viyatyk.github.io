@@ -6,9 +6,13 @@ sidebar:
   order: 1
 ---
 
+import DemoClip from '../../../components/DemoClip.astro';
+
 **ai-vision** is an agent-facing object model over an application: a way to let an AI agent read
 and drive your app through named paths. It is not computer vision or image analysis. Your app
 exposes one `call` tool, and the agent discovers everything else from the object model itself.
+
+<DemoClip src="ai-vision-demo.mp4" poster="ai-vision-demo.jpg" controls caption="How an AI agent sees Persephone: one call tool, named paths, and boards and web pages that plug their own models in" />
 
 ## Why one `call` instead of many tools
 
