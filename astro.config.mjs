@@ -28,12 +28,18 @@ export default defineConfig({
 			],
 			sidebar: [
 				{
+					// One sub-group per core feature, each in its own folder under persephone/.
 					label: 'Persephone',
-					items: [{ autogenerate: { directory: 'persephone' } }],
-				},
-				{
-					label: 'Persephone boards',
-					items: [{ label: 'Board catalog', link: '/boards/' }],
+					items: [
+						{ label: 'Overview', slug: 'persephone' },
+						{
+							label: 'Boards',
+							items: [
+								{ autogenerate: { directory: 'persephone/boards' } },
+								{ label: 'Board catalog', link: '/boards/' },
+							],
+						},
+					],
 				},
 				{
 					label: 'ai-vision',
