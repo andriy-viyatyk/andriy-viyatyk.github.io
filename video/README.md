@@ -329,7 +329,7 @@ camera keys.
 128-colour palette encode at 720 px and 10 fps, ~14 MB. The site shows the GIF. Remotion's ffmpeg
 has no `fps` filter, so the script sets the frame rate with `-r`.
 
-## Recipe: Torrent Viewer (screen recording, 54 s)
+## Recipe: Torrent Viewer (screen recording, 46 s)
 
 **What it shows**: a web page with a magnet link → the link opens in the **Torrent Viewer** board →
 the torrent list, then the file list → "Open any file" on the MP4 → a double-click plays Big Buck
@@ -364,6 +364,12 @@ the recording. Persephone has no built-in agent pointer yet (a backlog item); un
    player. Closing a player tab deletes an unsaved recording from the temp folder. Then run
    `node scripts/finish.mjs persephone-torrent-demo 5` (faststart + poster at 5 s, the magnet
    tooltip) and `node scripts/gif.mjs persephone-torrent-demo` (~12 MB), and delete the temp file.
+   **Trim the idle wait first**: between scene 1 and scene 2 the screen holds still for ~9 s (the
+   MCP round trip plus scene 2's opening sleep) while the board only updates its speed and peer
+   counts. The published take cuts 9.5–17.5 s, keeping ~1.5 s of the loaded board: re-encode
+   `-to 9.5` and `-ss 17.5` with libx264 into two parts, join them with the concat demuxer
+   (`-f concat -c copy`), then run finish and gif. Remotion's ffmpeg has no trim/fps/freezedetect
+   filters, so find the cut points from frame grabs (`-r 2 -vf scale=360:-1 f%02d.jpg`).
 8. **Clean up**: Remove all in the board (or the torrent keeps downloading 263 MB), close the
    capture window, stop the http-server.
 
