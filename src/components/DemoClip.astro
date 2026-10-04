@@ -1,0 +1,51 @@
+---
+/**
+ * A short, silent demo clip that plays like a GIF: starts by itself, loops, no controls.
+ * `src` is a media file name from the `media` release, e.g. "persephone-demo.mp4".
+ * Pass `controls` for a longer clip the reader should be able to pause and seek.
+ */
+interface Props {
+	src: string;
+	poster?: string;
+	caption?: string;
+	controls?: boolean;
+}
+
+const { src, poster, caption, controls = false } = Astro.props;
+const media = (name: string) => (name.startsWith('/') || name.includes('://') ? name : `/media/${name}`);
+---
+
+<figure class="demo-clip">
+	<video
+		src={media(src)}
+		poster={poster ? media(poster) : undefined}
+		autoplay={!controls}
+		loop={!controls}
+		muted
+		playsinline
+		controls={controls}
+		preload="metadata"
+		aria-label={caption}
+	></video>
+	{caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+	.demo-clip {
+		margin: 1.5rem 0;
+	}
+	.demo-clip video {
+		display: block;
+		width: 100%;
+		height: auto;
+		border-radius: 0.5rem;
+		border: 1px solid var(--sl-color-gray-5);
+		background: var(--sl-color-gray-6);
+	}
+	.demo-clip figcaption {
+		margin-top: 0.5rem;
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-3);
+		text-align: center;
+	}
+</style>

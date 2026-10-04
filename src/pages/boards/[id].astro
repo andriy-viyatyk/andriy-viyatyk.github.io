@@ -1,0 +1,56 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { type Board, loadBoards, screenshotUrl, sourceUrl } from '../../lib/boards';
+
+export async function getStaticPaths() {
+	const boards = await loadBoards();
+	return boards.map((board) => ({ params: { id: board.id }, props: { board } }));
+}
+
+const { board } = Astro.props as { board: Board };
+const screenshot = screenshotUrl(board);
+const sizeKb = Math.round(board.archive.size / 1024);
+---
+
+<StarlightPage frontmatter={{ title: board.name, description: board.description }}>
+	<p>{board.description}</p>
+
+	{screenshot && <img src={screenshot} alt={`${board.name} in Persephone`} width="1120" height="700" />}
+
+	<table>
+		<tbody>
+			{board.fileMasks && (
+				<tr>
+					<th>Opens</th>
+					<td><code>{board.fileMasks.join(', ')}</code></td>
+				</tr>
+			)}
+			<tr>
+				<th>Version</th>
+				<td>{board.version}</td>
+			</tr>
+			{board.minAppVersion && (
+				<tr>
+					<th>Needs Persephone</th>
+					<td>{board.minAppVersion} or later</td>
+				</tr>
+			)}
+			<tr>
+				<th>Download size</th>
+				<td>{sizeKb} KB</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<h2>Install</h2>
+	<p>
+		{board.fileMasks?.length
+			? <>Open a matching file in Persephone: the editor switch offers to install <strong>{board.name}</strong>. You can also install it from the Published Boards catalog.</>
+			: <>Install <strong>{board.name}</strong> from Persephone's Published Boards catalog.</>}
+		{' '}The board is downloaded, checked against its published checksum, and runs only after you trust it.
+	</p>
+
+	<p>
+		<a href={sourceUrl(board)}>Source on GitHub</a> · <a href="/boards/">All boards</a>
+	</p>
+</StarlightPage>

@@ -1,0 +1,73 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { loadBoards, screenshotUrl } from '../../lib/boards';
+
+const boards = await loadBoards();
+---
+
+<StarlightPage
+	frontmatter={{
+		title: 'Persephone boards',
+		description: 'Viewers and editors you can install into Persephone from its Published Boards catalog.',
+	}}
+>
+	<p>
+		A board is a small app that plugs into Persephone as an editor or viewer. These are published
+		in the catalog: open a matching file in Persephone and it offers to install the board, or browse
+		the catalog in the app.
+	</p>
+
+	<div class="board-grid not-content">
+		{
+			boards.map((board) => (
+				<a class="board-card" href={`/boards/${board.id}/`}>
+					{screenshotUrl(board) && <img src={screenshotUrl(board)} alt="" loading="lazy" width="1120" height="700" />}
+					<span class="board-name">{board.name}</span>
+					<span class="board-description">{board.description}</span>
+					{board.fileMasks && <span class="board-masks">{board.fileMasks.join('  ')}</span>}
+				</a>
+			))
+		}
+	</div>
+</StarlightPage>
+
+<style>
+	.board-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+		gap: 1rem;
+		margin-top: 1.5rem;
+	}
+	.board-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		padding: 0.75rem;
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 0.5rem;
+		text-decoration: none;
+		color: inherit;
+		background: var(--sl-color-black);
+	}
+	.board-card:hover {
+		border-color: var(--sl-color-accent);
+	}
+	.board-card img {
+		width: 100%;
+		height: auto;
+		border-radius: 0.3rem;
+	}
+	.board-name {
+		font-weight: 600;
+		color: var(--sl-color-white);
+	}
+	.board-description {
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-2);
+	}
+	.board-masks {
+		font-family: var(--sl-font-mono);
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+	}
+</style>

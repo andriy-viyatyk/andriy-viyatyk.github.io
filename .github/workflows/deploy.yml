@@ -1,0 +1,70 @@
+# Build the site and deploy it to GitHub Pages.
+#
+#     https://andriy-viyatyk.github.io/
+#
+# Demo media is not in git. It lives as assets of the "media" release and is downloaded into
+# public/media/ on every build, so it is served from this site with proper video/image types.
+# After uploading or replacing a media file, run this workflow (gh workflow run deploy.yml).
+#
+# The board catalog is read from persephone-boards at build time; the daily run picks up newly
+# published boards without a push here.
+#
+# Pages must be set to build from GitHub Actions (Settings → Pages → Source: GitHub Actions).
+
+name: Deploy site
+
+on:
+    push:
+        branches: [main]
+    schedule:
+        - cron: "17 3 * * *"
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+concurrency:
+    group: pages
+    cancel-in-progress: true
+
+jobs:
+    build:
+        name: Build the site
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+
+            - uses: actions/setup-node@v5
+              with:
+                  node-version: 24
+
+            - run: npm ci
+
+            - name: Download demo media
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: |
+                  mkdir -p public/media
+                  if gh release view media --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+                      gh release download media --repo "$GITHUB_REPOSITORY" --dir public/media --clobber
+                  fi
+                  echo "media files: $(find public/media -type f | wc -l)"
+
+            - run: npm run build
+
+            - uses: actions/upload-pages-artifact@v3
+              with:
+                  path: dist
+
+    deploy:
+        name: Deploy
+        needs: build
+        runs-on: ubuntu-latest
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+            - id: deployment
+              uses: actions/deploy-pages@v4

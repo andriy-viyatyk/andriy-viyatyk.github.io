@@ -1,0 +1,35 @@
+---
+title: Persephone
+description: A notepad for Windows that opens almost anything, built to be shared with AI agents.
+sidebar:
+  label: Overview
+  order: 1
+---
+
+import DemoClip from '../../../components/DemoClip.astro';
+
+**Persephone** is a notepad for Windows that opens almost anything. It starts exactly like a
+notepad — one empty text page — but drop in a JSON file, a Word document, a SQLite database, or a
+ZIP archive and it shows the content, not the bytes. And it is built to be shared with AI agents:
+everything you see on screen, an agent can see and drive too.
+
+<DemoClip src="persephone-demo.mp4" poster="persephone-demo.jpg" controls caption="A tour of Persephone" />
+
+## One viewer for everything
+
+- **Built in** — code with syntax highlighting (Monaco, 50+ languages), JSON/CSV grids, Markdown,
+  Mermaid diagrams, SVG and HTML previews, images, audio/video, archives, side-by-side diffs, and more.
+- **Installable** — the [board catalog](/boards/) adds viewers and editors on demand: Word, Excel,
+  PowerPoint, PDF, draw.io diagrams, SQLite databases and more.
+- **Made to order** — if no viewer exists for your file, ask an AI agent to build one as a board.
+
+## A workspace shared with AI agents
+
+Persephone ships a built-in MCP server. It exposes a single tool, `call`, and behind it the whole
+application as one object model — pages, editors, files, the browser, boards — built on
+[ai-vision](/ai-vision/).
+
+## Get it
+
+Download the latest installer from
+[GitHub Releases](https://github.com/andriy-viyatyk/persephone/releases/latest).

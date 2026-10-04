@@ -1,0 +1,78 @@
+---
+/**
+ * A YouTube video for longer walkthroughs with sound. Shows only a thumbnail until the reader
+ * clicks play, so the YouTube player is not loaded with the page.
+ * `id` is the video id from the YouTube link (the part after `v=` or `youtu.be/`).
+ */
+interface Props {
+	id: string;
+	title: string;
+}
+
+const { id, title } = Astro.props;
+---
+
+<figure class="youtube">
+	<button type="button" class="youtube-poster" data-id={id} aria-label={`Play: ${title}`}>
+		<img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" loading="lazy" />
+		<span class="youtube-play" aria-hidden="true">▶</span>
+	</button>
+	<figcaption>{title}</figcaption>
+</figure>
+
+<script>
+	for (const button of document.querySelectorAll<HTMLButtonElement>('.youtube-poster')) {
+		button.addEventListener('click', () => {
+			const frame = document.createElement('iframe');
+			frame.src = `https://www.youtube-nocookie.com/embed/${button.dataset.id}?autoplay=1`;
+			frame.title = button.getAttribute('aria-label') ?? 'YouTube video';
+			frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+			frame.allowFullscreen = true;
+			button.replaceWith(frame);
+		});
+	}
+</script>
+
+<style>
+	.youtube {
+		margin: 1.5rem 0;
+	}
+	.youtube-poster,
+	.youtube :global(iframe) {
+		position: relative;
+		display: block;
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		border: 0;
+		border-radius: 0.5rem;
+		padding: 0;
+		overflow: hidden;
+		background: var(--sl-color-black);
+		cursor: pointer;
+	}
+	.youtube-poster img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		margin: 0;
+	}
+	.youtube-play {
+		position: absolute;
+		inset: 0;
+		margin: auto;
+		width: 4.5rem;
+		height: 3.2rem;
+		display: grid;
+		place-items: center;
+		border-radius: 0.8rem;
+		font-size: 1.6rem;
+		color: var(--sl-color-white);
+		background: var(--sl-color-accent);
+	}
+	.youtube figcaption {
+		margin-top: 0.5rem;
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-3);
+		text-align: center;
+	}
+</style>

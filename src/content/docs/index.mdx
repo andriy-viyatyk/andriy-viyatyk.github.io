@@ -1,0 +1,46 @@
+---
+title: Andriy Viyatyk
+description: Persephone, ai-vision, av-grid and Persephone boards — demos, documentation and posts.
+template: splash
+hero:
+  title: Tools for developers and their AI agents
+  tagline: A notepad that opens almost anything, the object model that lets agents drive it, a grid that handles 100,000 rows, and boards you can install or ask an agent to build.
+  actions:
+    - text: Meet Persephone
+      link: /persephone/
+      icon: right-arrow
+    - text: Read the posts
+      link: /blog/
+      icon: document
+      variant: minimal
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+import DemoClip from '../../components/DemoClip.astro';
+
+<DemoClip src="persephone-demo.mp4" poster="persephone-demo.jpg" caption="Persephone opening different kinds of files" />
+
+## Projects
+
+<CardGrid>
+	<LinkCard
+		title="Persephone"
+		description="A notepad for Windows that opens almost anything — and a workspace you share with AI agents."
+		href="/persephone/"
+	/>
+	<LinkCard
+		title="Persephone boards"
+		description="Installable viewers and editors: Word, Excel, PDF, draw.io, SQLite and more."
+		href="/boards/"
+	/>
+	<LinkCard
+		title="ai-vision"
+		description="An agent-facing object model: let an AI agent read and drive your app through one call tool."
+		href="/ai-vision/"
+	/>
+	<LinkCard
+		title="av-grid"
+		description="A dependency-free virtualized data grid built for 100,000+ rows."
+		href="/grid/"
+	/>
+</CardGrid>

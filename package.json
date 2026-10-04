@@ -1,0 +1,22 @@
+{
+  "name": "andriy-viyatyk.github.io",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "media": "gh release download media --repo andriy-viyatyk/andriy-viyatyk.github.io --dir public/media --clobber"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.42.5",
+    "astro": "^7.2.10",
+    "sharp": "^0.35.3",
+    "starlight-blog": "^0.30.0"
+  },
+  "allowScripts": {
+    "esbuild": true
+  }
+}
