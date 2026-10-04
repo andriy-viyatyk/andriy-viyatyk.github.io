@@ -44,6 +44,7 @@ export default defineConfig({
 							],
 						},
 						{ label: 'Site Extensions', slug: 'persephone/site-extensions' },
+						{ label: 'Mneme', slug: 'persephone/mneme' },
 					],
 				},
 				{
