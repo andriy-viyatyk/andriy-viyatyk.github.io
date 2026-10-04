@@ -5,7 +5,12 @@ MP4). They are **not screen recordings**: each one is a set of screenshots of th
 animated captions, typing terminals, chat bubbles and camera zooms written as React scenes. So a
 video can be updated by editing text or swapping one screenshot, instead of re-recording everything.
 
-| Video | Composition | Source | On the site | Render |
+**The site shows GIFs, not MP4s.** Every video is rendered to MP4 first, then converted to a looping
+GIF by [scripts/gif.mjs](scripts/gif.mjs) (every `render:*` script does it). A GIF starts at once and
+repeats with no player; `DemoClip` renders a `.gif` as an image. The MP4 and its poster stay in the
+`media` release as the master copy and for anyone who needs a video.
+
+| Video (site shows `<name>.gif`) | Composition | Source | On the site | Render |
 |---|---|---|---|---|
 | `ai-vision-demo.mp4` | `AiVision` | [src/ai-vision/AiVision.tsx](src/ai-vision/AiVision.tsx) | `/ai-vision/` ([page](../src/content/docs/ai-vision/index.mdx)) | `npm run render:ai-vision` |
 | `boards-todo-demo.mp4` | `BoardsTodo` | [src/boards/BoardsTodo.tsx](src/boards/BoardsTodo.tsx) | `/persephone/boards/` ([page](../src/content/docs/persephone/boards/index.mdx)) | `npm run render:boards-todo` |
@@ -37,6 +42,7 @@ video/
   public/*.png         screenshots used by the scenes (committed; 1296x968)
   fixtures/<video>/    the data and boards the screenshots were taken from (committed)
   scripts/finish.mjs   faststart + poster JPEG; runs after every render script
+  scripts/gif.mjs      the looping GIF the site shows (720 px, 10 fps by default); runs after finish.mjs
   out/                 render output and test stills (git-ignored)
 ```
 
@@ -65,7 +71,8 @@ Run `npm install` once and `npm run studio` to scrub through the videos in a bro
 3. **Review stills** before rendering the whole video. They are fast and show framing problems:
    `npx remotion still <Composition> out/st/f600.png --frame=600`. Check: captions on one line,
    rings on target, the camera not cropping important UI, nothing overlapping.
-4. **Render**: `npm run render:<video>` → `out/<name>.mp4` plus `out/<name>.jpg` (poster).
+4. **Render**: `npm run render:<video>` → `out/<name>.mp4`, `out/<name>.jpg` (poster) and
+   `out/<name>.gif` (what the site shows).
    Remotion reports the pixel format as yuvj420p even with `--pixel-format yuv420p`; browsers play it.
 5. **Show the author for review** before publishing (open the MP4 in Persephone).
 6. **Publish** (below).
@@ -318,10 +325,9 @@ camera keys.
 - `h-browser.png`: a browser tab on `https://andriy-viyatyk.github.io/boards/`.
 
 **Render**: `npm run render:home`. It makes the MP4 (crf 23, ~7 MB), the poster and
-`out/persephone-home.gif`, which comes from [scripts/gif.mjs](scripts/gif.mjs). The GIF is a
-two-pass palette encode, 560 px at 12 fps, ~13.5 MB. It is for places where video does not play
-(a GitHub README); the site uses the MP4. A sharp GIF at full column width would be 35–40 MB.
-Remotion's ffmpeg has no `fps` filter, so the script sets the frame rate with `-r`.
+`out/persephone-home.gif`, which comes from [scripts/gif.mjs](scripts/gif.mjs): a two-pass,
+128-colour palette encode at 720 px and 10 fps, ~14 MB. The site shows the GIF. Remotion's ffmpeg
+has no `fps` filter, so the script sets the frame rate with `-r`.
 
 ## Recipe: Torrent Viewer (screen recording, 54 s)
 
@@ -357,7 +363,7 @@ the recording. Persephone has no built-in agent pointer yet (a backlog item); un
 7. **Keep the file**: copy it to `out/persephone-torrent-demo.mp4` **before** opening it in a
    player. Closing a player tab deletes an unsaved recording from the temp folder. Then run
    `node scripts/finish.mjs persephone-torrent-demo 5` (faststart + poster at 5 s, the magnet
-   tooltip), and delete the temp file.
+   tooltip) and `node scripts/gif.mjs persephone-torrent-demo` (~12 MB), and delete the temp file.
 8. **Clean up**: Remove all in the board (or the torrent keeps downloading 263 MB), close the
    capture window, stop the http-server.
 
@@ -425,7 +431,8 @@ workspace tab → the Explorer (callout) → README preview, `src/sensors.ts`, `
 3. Dry run: `scene.mjs workspace-1.js workspace-2.js workspace-3.js workspace-4.js`. Then reset,
    re-install overlay + helpers, and the take: the same four files with `--take`. Scene 4 stops the
    recording and returns the temp path.
-4. Copy to `out/persephone-workspace-demo.mp4`, `node scripts/finish.mjs persephone-workspace-demo 41`.
+4. Copy to `out/persephone-workspace-demo.mp4`, `node scripts/finish.mjs persephone-workspace-demo 41`, then
+   `node scripts/gif.mjs persephone-workspace-demo 960 12` (~8 MB; a recording has little motion).
 
 Gotchas: a folder row's **name** opens Folder View; its chevron (`__ws.chevron(name)`) expands it.
 A search jump in a short file lands the match under Monaco's sticky-scroll header (a Persephone
@@ -449,7 +456,8 @@ The `.docx` is a fixture built by hand (OOXML parts zipped with `/` entry names:
 3. Take: `scene.mjs --take install-board-1.js install-board-2.js --wait __b2done`, then
    `scene.mjs install-board-3.js` (stops the recording). Scene 2 clicks **Register board** without
    awaiting it: that click resolves only when the dialog it opens is answered.
-4. Copy to `out/persephone-install-board-demo.mp4`, `node scripts/finish.mjs persephone-install-board-demo 36`.
+4. Copy to `out/persephone-install-board-demo.mp4`, `node scripts/finish.mjs persephone-install-board-demo 36`, then
+   `node scripts/gif.mjs persephone-install-board-demo 960 12` (~5.5 MB).
    To retake, uninstall Word Viewer first.
 
 ## Recipe: Site Extensions (`SiteExtensions`, 44 s)
@@ -470,10 +478,13 @@ workflow downloads them into `public/media/` on every build.
 
 1. Back up the asset you are replacing:
    `gh release download media -p '<name>.*' -D <scratch>/old --clobber`.
-2. Upload it: `gh release upload media out/<name>.mp4 out/<name>.jpg --clobber` (keep the file name
-   when you replace a video, so the page needs no change).
-3. On the page, add or update `<DemoClip src="<name>.mp4" poster="<name>.jpg" controls caption="…" />`
-   (`.mdx` only; rename a `.md` page to `.mdx` and import `DemoClip`).
+2. Upload it: `gh release upload media out/<name>.gif out/<name>.mp4 out/<name>.jpg --clobber` (keep
+   the file name when you replace a video, so the page needs no change). The GIF is what the page
+   shows; the MP4 and JPEG are the master copy.
+3. On the page, add or update `<DemoClip src="<name>.gif" caption="…" />`
+   (`.mdx` only; rename a `.md` page to `.mdx` and import `DemoClip`). Keep a GIF under ~15 MB if
+   you can: lower the width or fps (`gif.mjs <name> 640 8`), or trim the clip. av-grid (~31 MB) is the
+   largest.
 4. Commit and push. The push deploys; if only the media changed, run `gh workflow run deploy.yml`.
 5. Check the deploy (`gh run watch`), then
-   `curl -sI https://andriy-viyatyk.github.io/media/<name>.mp4`. Its `Content-Length` must match the new file.
+   `curl -sI https://andriy-viyatyk.github.io/media/<name>.gif`. Its `Content-Length` must match the new file.

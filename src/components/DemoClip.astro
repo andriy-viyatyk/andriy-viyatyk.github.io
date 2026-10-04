@@ -1,8 +1,10 @@
 ---
 /**
- * A short, silent demo clip that plays like a GIF: starts by itself, loops, no controls.
- * `src` is a media file name from the `media` release, e.g. "persephone-demo.mp4".
- * Pass `controls` for a longer clip the reader should be able to pause and seek.
+ * A short, silent demo clip that starts by itself and loops. `src` is a media file name from the
+ * `media` release, e.g. "persephone-demo.gif".
+ *
+ * A .gif renders as an image, which the site prefers: it plays at once and needs no player. An .mp4
+ * still renders as a looping video (pass `controls` for one the reader should pause and seek).
  */
 interface Props {
 	src: string;
@@ -13,20 +15,27 @@ interface Props {
 
 const { src, poster, caption, controls = false } = Astro.props;
 const media = (name: string) => (name.startsWith('/') || name.includes('://') ? name : `/media/${name}`);
+const isGif = src.toLowerCase().endsWith('.gif');
 ---
 
 <figure class="demo-clip">
-	<video
-		src={media(src)}
-		poster={poster ? media(poster) : undefined}
-		autoplay={!controls}
-		loop={!controls}
-		muted
-		playsinline
-		controls={controls}
-		preload="metadata"
-		aria-label={caption}
-	></video>
+	{
+		isGif ? (
+			<img src={media(src)} alt={caption ?? ''} width="960" height="720" decoding="async" />
+		) : (
+			<video
+				src={media(src)}
+				poster={poster ? media(poster) : undefined}
+				autoplay={!controls}
+				loop={!controls}
+				muted
+				playsinline
+				controls={controls}
+				preload="metadata"
+				aria-label={caption}
+			/>
+		)
+	}
 	{caption && <figcaption>{caption}</figcaption>}
 </figure>
 
@@ -34,6 +43,7 @@ const media = (name: string) => (name.startsWith('/') || name.includes('://') ? 
 	.demo-clip {
 		margin: 1.5rem 0;
 	}
+	.demo-clip img,
 	.demo-clip video {
 		display: block;
 		width: 100%;

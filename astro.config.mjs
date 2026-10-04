@@ -14,6 +14,8 @@ export default defineConfig({
 			head: [{ tag: 'link', attrs: { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' } }],
 			routeMiddleware: './src/routeData.ts',
 			customCss: ['./src/styles/custom.css'],
+			// Head adds the site's ai-vision model (src/scripts/site-model.ts) to every page.
+			components: { Head: './src/components/Head.astro' },
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/andriy-viyatyk' }],
 			plugins: [
 				starlightBlog({

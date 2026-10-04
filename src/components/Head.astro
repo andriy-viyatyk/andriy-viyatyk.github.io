@@ -1,0 +1,13 @@
+---
+/**
+ * Starlight's Head plus the site's ai-vision model (src/scripts/site-model.ts), so every page
+ * publishes window.__aiVision for an agent driving Persephone's browser.
+ */
+import Default from '@astrojs/starlight/components/Head.astro';
+---
+
+<Default />
+
+<script>
+	import '../scripts/site-model';
+</script>

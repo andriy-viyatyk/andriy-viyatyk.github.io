@@ -1,0 +1,82 @@
+---
+title: This site's model
+description: Every page of this site publishes an ai-vision model, so an agent in Persephone's browser can read, search and navigate it by path.
+sidebar:
+  order: 2
+---
+
+Every page of this site publishes its own ai-vision model. Open the site in Persephone's built-in
+browser and your agent finds it at `pages["<id>"].editor.app`. From there it reads the page by
+section, searches the site and moves between pages. It doesn't have to parse the page snapshot.
+
+It's a small model on purpose. The site is static documentation, so there isn't much for an agent
+to do here. What it shows is how little code a site needs to plug into the same `call` tree that
+Persephone's editors and boards use.
+
+## Try it
+
+Open `https://andriy-viyatyk.github.io/` in Persephone's browser and ask your agent, for example:
+
+- "What does this site say about installing boards? Open that page and show me the steps."
+- "Which Persephone boards open `.torrent` files?"
+- "Switch this site to the light theme and show me where the theme picker is."
+
+## What the model exposes
+
+| Path | What it is |
+|---|---|
+| `app` | Summary: the current page, the number of pages and boards, the colour theme. |
+| `app.page` | The page in this tab: `title`, `headings`, `clips`, `text`, `section(heading)`, `scrollTo(heading)`. |
+| `app.pages` | Every page with its path; index by position or by path, `pages["/persephone/"]`. |
+| `app.boards` | The Persephone board catalog; index by id, `boards["torrent-viewer"]`. |
+| `app.search(query, limit?)` | Full-text search over the site, with an excerpt for each match. |
+| `app.open(path)` | Go to another page. The tab reloads and the new page publishes a fresh model. |
+| `app.theme` | The colour theme, `"auto"`, `"dark"` or `"light"`; writable. |
+| `app.elements`, `app.highlight(name, message)` | The search box, theme picker, sidebar, table of contents and demo clip, pointed at on screen. |
+| `app.helpSearch(query)` | Find a member or control by what it's for. |
+
+A first call returns the summary and a hint that lists these members:
+
+```text
+call pages["<id>"].editor.app
+→ { kind: "Site", page: "Workspace", path: "/persephone/workspace/", pages: 21, boards: 11, theme: "auto" }
+
+call pages["<id>"].editor.app.search  args ["install a board", 3]
+→ [{ title: "Installing boards", path: "/persephone/boards/installing/", excerpt: "…" }, …]
+```
+
+## How it's built
+
+It's one script loaded on every page. It loads a small index of the site, describes the model, and
+calls `expose()`:
+
+```js
+import { expose } from 'ai-vision/remote';
+
+const root = {
+	aiVision: {
+		kind: 'Site',
+		summary: 'The andriy-viyatyk.github.io site: docs and demos for Persephone, ai-vision, av-grid and boards.',
+		members: [
+			{ name: 'page', kind: 'property', node: true, summary: 'The page open in this tab.' },
+			{ name: 'search', kind: 'method', signature: 'search(query, limit?)', summary: 'Full-text search over the site.' },
+			// …
+		],
+		summarize: () => ({ kind: 'Site', page: document.title }),
+	},
+	get page() { return page; },
+	search,
+	// …
+};
+
+expose(root); // publishes window.__aiVision; Persephone's browser finds it
+```
+
+Outside Persephone nothing reads `window.__aiVision`, so the page works as usual. Persephone treats
+the model as page-authored content. It labels results as written by the page, keeps them under
+`.app`, and never probes Incognito or Tor tabs.
+
+The full source is
+[`src/scripts/site-model.ts`](https://github.com/andriy-viyatyk/andriy-viyatyk.github.io/blob/main/src/scripts/site-model.ts).
+If you can't change a site's code, a [Site Extension](/persephone/site-extensions/) adds a model to
+it from the outside.

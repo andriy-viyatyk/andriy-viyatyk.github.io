@@ -28,3 +28,16 @@ The site's demo videos (`ai-vision-demo.mp4`, `boards-todo-demo.mp4`, `persephon
 recordings made with Persephone's own recorder and a scripted cursor overlay, against a demo data profile (their recipes are in the same README). To update one, read [video/README.md](video/README.md) first. It has
 each video's source, the Persephone features it shows, how its screenshots and agent session were
 captured, and how to render and publish. Don't recreate a video from scratch.
+
+The pages show each video as a looping **GIF** (`<name>.gif`, made by `video/scripts/gif.mjs` after every
+render); the MP4 and poster stay in the `media` release as the master copy.
+
+## ai-vision model
+
+Every page publishes an ai-vision model (`window.__aiVision`) for agents driving Persephone's browser:
+[`src/scripts/site-model.ts`](src/scripts/site-model.ts), loaded by the `Head` override in
+[`src/components/Head.astro`](src/components/Head.astro), with its page and board index built by
+[`src/pages/ai-vision/site-index.json.ts`](src/pages/ai-vision/site-index.json.ts). It is documented for
+readers on [`/ai-vision/this-site/`](src/content/docs/ai-vision/this-site.mdx); keep that page's table in step
+when you change the model. Test it from Persephone: open the page with `pages.openUrlInBrowserTab`
+and call `pages["<id>"].editor.app`. `search()` needs the built site (`astro build` + `astro preview`).
