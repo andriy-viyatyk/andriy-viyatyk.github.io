@@ -13,6 +13,7 @@ export default defineConfig({
 			favicon: '/favicon.png',
 			head: [{ tag: 'link', attrs: { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' } }],
 			routeMiddleware: './src/routeData.ts',
+			customCss: ['./src/styles/custom.css'],
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/andriy-viyatyk' }],
 			plugins: [
 				starlightBlog({

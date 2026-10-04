@@ -1,0 +1,13 @@
+/* Home page (the only page with a hero): use the full width beside the sidebar. */
+html[data-has-hero] {
+	--sl-content-width: 67.5rem;
+}
+
+/* The hero has no image, so its text takes the whole row instead of leaving an empty column. */
+.hero {
+	grid-template-columns: 100%;
+}
+
+.hero .tagline {
+	max-width: 65ch;
+}
