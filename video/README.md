@@ -12,6 +12,12 @@ video can be updated by editing text or swapping one screenshot, instead of re-r
 | `persephone-platform.mp4` | `Platform` | [src/persephone/Platform.tsx](src/persephone/Platform.tsx) | `/persephone/` ([page](../src/content/docs/persephone/index.mdx)) | `npm run render:platform` |
 | `av-grid-demo.mp4` | `AvGrid` | [src/av-grid/AvGrid.tsx](src/av-grid/AvGrid.tsx) | `/grid/` ([page](../src/content/docs/grid/index.mdx)) | `npm run render:av-grid` |
 | `persephone-home.mp4` | `HomeLoop` | [src/persephone/HomeLoop.tsx](src/persephone/HomeLoop.tsx) | `/` ([page](../src/content/docs/index.mdx)) | `npm run render:home` |
+| `persephone-torrent-demo.mp4` | — (a real screen recording) | [fixtures/torrent-demo/scenes.js](fixtures/torrent-demo/scenes.js) | `/boards/torrent-viewer/` ([template](../src/pages/boards/%5Bid%5D.astro)) | recorded in Persephone, see its recipe |
+
+One video is the exception: `persephone-torrent-demo.mp4` is a **real screen recording** made by
+Persephone's own recorder (`window.screen.recording`), with a scripted cursor and tooltips drawn on
+top. Use that method when the point is live behavior (streaming, loading, playback) that
+screenshots can't show; its recipe is at the end.
 
 `persephone-demo.mp4`, the author's own screen capture, was the home-page clip before
 `persephone-home.mp4`. It is still in the `media` release as a backup.
@@ -311,6 +317,60 @@ camera keys.
 two-pass palette encode, 560 px at 12 fps, ~13.5 MB. It is for places where video does not play
 (a GitHub README); the site uses the MP4. A sharp GIF at full column width would be 35–40 MB.
 Remotion's ffmpeg has no `fps` filter, so the script sets the frame rate with `-r`.
+
+## Recipe: Torrent Viewer (screen recording, 54 s)
+
+**What it shows**: a web page with a magnet link → the link opens in the **Torrent Viewer** board →
+the torrent list, then the file list → "Open any file" on the MP4 → a double-click plays Big Buck
+Bunny in the video player while it downloads → the torrent status (peers, speed) in the status bar.
+On the site it loops in place of the board's catalog screenshot: the board pages are generated
+from the persephone-boards manifest, and the `demoClips` map in
+[src/pages/boards/[id].astro](../src/pages/boards/%5Bid%5D.astro) swaps in a clip by board id.
+
+**How it is made**: no Remotion. Persephone records its own window, and an overlay script draws an
+agent cursor, a ring with a dimmed spotlight, and a tooltip card into that window, so they are in
+the recording. Persephone has no built-in agent pointer yet (a backlog item); until it does,
+[scripts/demo-overlay.js](scripts/demo-overlay.js) is that pointer. Its header lists the API
+(`move`, `ripple`, `show`, `hide`, `appRect`, `toWindow`).
+
+1. **Fixture**: serve [fixtures/torrent-demo/](fixtures/torrent-demo/index.html) with
+   `npx -y http-server video/fixtures/torrent-demo -p 4320 -c-1 --silent`. Serve it over http: a
+   `file://` URL puts the author's user name in the address bar.
+2. **Capture window**: `window.openNew` → index *N*; `script.execute` with
+   `window.resizeTo(1296,968)`. Open `http://localhost:4320/` with
+   `pages.openUrlInBrowserTab` and close the window's empty `untitled` tab. Never record the
+   author's main window.
+3. **Clean state**: no torrent in the board and no board tab open. The take starts from the web
+   page alone. To reset, open the board tab, click **Remove all** (`board.editor.evaluate` that
+   clicks the button), then close the board and player tabs.
+4. **Dry run** the flow once without recording. Board rects shift if the torrent list changes.
+5. **Install the overlay**: paste `scripts/demo-overlay.js` into `script.execute` (windowIndex
+   *N*). Re-install it after any renderer reload; the dev server's hot reload wipes it.
+6. **Record**: run the three blocks of [fixtures/torrent-demo/scenes.js](fixtures/torrent-demo/scenes.js),
+   each as one `script.execute` call. Scene 1 starts `recording.start({ region: "window" })`, and
+   scene 3 calls `recording.stop()`, which returns the temporary path.
+7. **Keep the file**: copy it to `out/persephone-torrent-demo.mp4` **before** opening it in a
+   player. Closing a player tab deletes an unsaved recording from the temp folder. Then run
+   `node scripts/finish.mjs persephone-torrent-demo 5` (faststart + poster at 5 s, the magnet
+   tooltip), and delete the temp file.
+8. **Clean up**: Remove all in the board (or the torrent keeps downloading 263 MB), close the
+   capture window, stop the http-server.
+
+**Gotchas met while recording it**:
+
+- Coordinates: an element inside a browser page or board is read with
+  `pages[i].editor.evaluate(... getBoundingClientRect())` and mapped with
+  `__demo.toWindow("browser" | "board", rect)`. A browser page is a `<webview>`, and a board an
+  `<iframe>`. Shell elements: `__demo.appRect(selector)`. Hidden tabs keep 0x0 copies of shell
+  elements, so a plain `querySelector` can hit the wrong one.
+- In the board a single click only selects a file. `click(..., { clickCount: 2 })` or Enter opens
+  it.
+- The recorder's header controls (timer, Pause, Stop) are inside a full-window recording. The
+  scenes hide them with `visibility: hidden`.
+- Every MCP round trip between scenes adds idle footage (about 4 s between scenes 1 and 2 here).
+  Put more in one scene to tighten the clip.
+- The recording has a variable frame rate (frames only when the screen changes, ~16 fps average),
+  which is fine for the web.
 
 ## Publishing
 

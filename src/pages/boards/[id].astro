@@ -1,6 +1,17 @@
 ---
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import DemoClip from '../../components/DemoClip.astro';
 import { type Board, loadBoards, screenshotUrl, sourceUrl } from '../../lib/boards';
+
+// A board listed here shows a looping demo clip (from the `media` release) instead of the
+// screenshot its manifest names. The catalog data comes from persephone-boards; the clips are ours.
+const demoClips: Record<string, { src: string; poster: string; caption: string }> = {
+	'torrent-viewer': {
+		src: 'persephone-torrent-demo.mp4',
+		poster: 'persephone-torrent-demo.jpg',
+		caption: 'A magnet link from a web page opens in the Torrent Viewer; the film streams into the video player while it downloads',
+	},
+};
 
 export async function getStaticPaths() {
 	const boards = await loadBoards();
@@ -8,13 +19,15 @@ export async function getStaticPaths() {
 }
 
 const { board } = Astro.props as { board: Board };
-const screenshot = screenshotUrl(board);
+const demo = demoClips[board.id];
+const screenshot = demo ? undefined : screenshotUrl(board);
 const sizeKb = Math.round(board.archive.size / 1024);
 ---
 
 <StarlightPage frontmatter={{ title: board.name, description: board.description }}>
 	<p>{board.description}</p>
 
+	{demo && <DemoClip src={demo.src} poster={demo.poster} caption={demo.caption} />}
 	{screenshot && <img src={screenshot} alt={`${board.name} in Persephone`} width="1120" height="700" />}
 
 	<table>

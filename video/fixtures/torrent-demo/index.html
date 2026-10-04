@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Open Movie Library</title>
+<!-- The page the Torrent Viewer demo starts on (see "Recipe: Torrent Viewer" in video/README.md).
+     Serve it over http so the address bar shows localhost, not a local path:
+     npx -y http-server video/fixtures/torrent-demo -p 4320 -c-1 --silent
+     The magnet is the public Big Buck Bunny torrent (CC BY 3.0) with a WebTorrent web seed. -->
+<style>
+  :root { --bg:#f6f7fb; --card:#fff; --text:#1f2430; --muted:#667085; --accent:#e8590c; --border:#e4e7ec; }
+  body { margin:0; font:15px/1.5 "Segoe UI", system-ui, sans-serif; background:var(--bg); color:var(--text); }
+  header { background:#1d2433; color:#fff; padding:22px 40px; }
+  header h1 { margin:0; font-size:24px; }
+  header p { margin:4px 0 0; color:#c3c9d5; }
+  main { max-width:860px; margin:32px auto; padding:0 24px; display:grid; gap:20px; }
+  .film { display:flex; gap:22px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; }
+  .poster { flex:0 0 120px; height:170px; border-radius:8px; display:flex; align-items:end; padding:10px; box-sizing:border-box; color:#fff; font-weight:700; }
+  .bbb { background:linear-gradient(160deg,#7cc35b,#2f7d32 60%,#1b4d1e); }
+  .sintel { background:linear-gradient(160deg,#9aa8c7,#4b5a83 60%,#232a44); }
+  .tos { background:linear-gradient(160deg,#c9a0dc,#6d4c8f 60%,#33204a); }
+  h2 { margin:0 0 4px; font-size:20px; }
+  .meta { color:var(--muted); font-size:13px; margin-bottom:8px; }
+  .links { margin-top:12px; display:flex; gap:12px; }
+  .magnet { display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border-radius:8px; background:var(--accent); color:#fff; text-decoration:none; font-weight:600; }
+  .magnet.off { background:#c3c9d5; pointer-events:none; }
+</style>
+</head>
+<body>
+<header><h1>Open Movie Library</h1><p>Free films from the Blender Foundation, licensed under Creative Commons.</p></header>
+<main>
+  <article class="film">
+    <div class="poster bbb">Big Buck Bunny</div>
+    <div>
+      <h2>Big Buck Bunny</h2>
+      <div class="meta">2008 · Animation · 10 min · CC BY 3.0</div>
+      <p>A giant rabbit takes on three bullying rodents in this comedy short from the Blender Institute.</p>
+      <div class="links"><a id="bbb-magnet" class="magnet" href="magnet:?xt=urn:btih:dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c&dn=Big+Buck+Bunny&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2F&xs=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2Fbig-buck-bunny.torrent">🧲 Magnet link</a></div>
+    </div>
+  </article>
+  <article class="film">
+    <div class="poster sintel">Sintel</div>
+    <div>
+      <h2>Sintel</h2>
+      <div class="meta">2010 · Fantasy · 15 min · CC BY 3.0</div>
+      <p>A lonely young woman searches for the baby dragon she once rescued.</p>
+      <div class="links"><a class="magnet off">🧲 Magnet link</a></div>
+    </div>
+  </article>
+  <article class="film">
+    <div class="poster tos">Tears of Steel</div>
+    <div>
+      <h2>Tears of Steel</h2>
+      <div class="meta">2012 · Sci-fi · 12 min · CC BY 3.0</div>
+      <p>Scientists in Amsterdam try to save the world with a memory from the past.</p>
+      <div class="links"><a class="magnet off">🧲 Magnet link</a></div>
+    </div>
+  </article>
+</main>
+</body>
+</html>
