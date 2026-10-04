@@ -1,0 +1,59 @@
+{
+    "type": "todo-editor",
+    "lists": [
+        "Site launch"
+    ],
+    "tags": [
+        {
+            "name": "docs",
+            "color": "dodgerblue"
+        },
+        {
+            "name": "video",
+            "color": "hotpink"
+        }
+    ],
+    "items": [
+        {
+            "id": "e74741f2-b601-497c-a387-c578844455dc",
+            "list": "Site launch",
+            "title": "Record the boards demo",
+            "done": true,
+            "createdDate": "2026-10-04T08:50:21.352Z",
+            "doneDate": "2026-10-04T08:50:28.378Z",
+            "comment": null,
+            "tag": "video"
+        },
+        {
+            "id": "6ce32932-7e1f-4bf4-91a9-d41f934cac02",
+            "list": "Site launch",
+            "title": "Write the ai-vision page",
+            "done": false,
+            "createdDate": "2026-10-04T08:50:21.938Z",
+            "doneDate": null,
+            "comment": null,
+            "tag": "docs"
+        },
+        {
+            "id": "fc9dcdae-c4f4-43c9-acf4-f42b2ebb3021",
+            "list": "Site launch",
+            "title": "Publish the board catalog",
+            "done": false,
+            "createdDate": "2026-10-04T08:50:22.435Z",
+            "doneDate": null,
+            "comment": null,
+            "tag": null
+        },
+        {
+            "id": "fe1e2e4c-a949-4ad5-8a2f-40664be6a6a4",
+            "list": "Site launch",
+            "title": "Add a logo to the header",
+            "done": false,
+            "createdDate": "2026-10-04T08:50:22.460Z",
+            "doneDate": null,
+            "comment": null,
+            "tag": null
+        }
+    ],
+    "state": {}
+}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>My Todo</title>
+    <link rel="stylesheet" href="./board-base.css" />
+    <link rel="stylesheet" href="./style.css" />
+    <!-- Recommended-components skin: linked LAST so drag states win over item styles. -->
+    <link rel="stylesheet" href="./lib/sortablejs.css" />
+</head>
+<body>
+    <div class="p-toolbar">
+        <span class="p-toolbar-title">My Todo</span>
+        <span class="p-sep"></span>
+        <button class="p-btn selected" data-filter="all" data-name="filter-all">All</button>
+        <button class="p-btn" data-filter="active" data-name="filter-active">Active</button>
+        <button class="p-btn" data-filter="done" data-name="filter-done">Done</button>
+        <span class="p-spacer"></span>
+        <button class="p-btn ghost" id="clear-done" data-name="clear-done">Clear done</button>
+    </div>
+
+    <main class="wrap">
+        <form class="add-row" id="add-form" autocomplete="off">
+            <input class="p-input md" id="new-task" data-name="new-task" placeholder="What needs doing? Press Enter to add" />
+            <select class="p-select md" id="new-priority" data-name="new-priority" title="Priority">
+                <option value="high">High</option>
+                <option value="medium" selected>Medium</option>
+                <option value="low">Low</option>
+            </select>
+            <input class="p-input md" type="date" id="new-due" data-name="new-due" title="Due date (optional)" />
+            <button class="p-btn primary md" type="submit" data-name="add-task">Add</button>
+        </form>
+
+        <section class="summary" data-name="summary">
+            <div class="summary-text"><strong id="left-count">0</strong> <span id="left-label">tasks left</span>
+                <span class="muted" id="done-count"></span>
+                <span class="overdue-count" id="overdue-count"></span></div>
+            <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
+        </section>
+
+        <ul class="tasks" id="tasks" data-name="task-list"></ul>
+        <div class="empty" id="empty" hidden>Nothing here yet — add your first task above.</div>
+    </main>
+
+    <script src="./lib/Sortable.min.js"></script>
+    <script src="./app.js"></script>
+</body>
+</html>

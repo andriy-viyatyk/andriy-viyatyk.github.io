@@ -20,3 +20,10 @@ Consult these guides before working on related tasks:
 - [Adding or managing content](https://docs.astro.build/en/guides/content-collections/)
 - [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
 - [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
+
+## Demo videos
+
+The site's demo videos (`ai-vision-demo.mp4`, `boards-todo-demo.mp4`) are made with Remotion in
+[`video/`](video/README.md). To update one, read [video/README.md](video/README.md) first. It has
+each video's source, the Persephone features it shows, how its screenshots and agent session were
+captured, and how to render and publish. Don't recreate a video from scratch.

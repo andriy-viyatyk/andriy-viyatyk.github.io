@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "studio": "remotion studio",
-    "render:ai-vision": "remotion render AiVision out/ai-vision-demo.mp4 --codec h264 --crf 20 --pixel-format yuv420p",
-    "render:boards-todo": "remotion render BoardsTodo out/boards-todo-demo.mp4 --codec h264 --crf 20 --pixel-format yuv420p"
+    "render:ai-vision": "remotion render AiVision out/ai-vision-demo.mp4 --codec h264 --crf 20 --pixel-format yuv420p && node scripts/finish.mjs ai-vision-demo 4",
+    "render:boards-todo": "remotion render BoardsTodo out/boards-todo-demo.mp4 --codec h264 --crf 20 --pixel-format yuv420p && node scripts/finish.mjs boards-todo-demo 4.5"
   },
   "dependencies": {
     "@remotion/cli": "4.0.532",
