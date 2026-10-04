@@ -264,15 +264,22 @@ function normalizePathSafe(key: unknown): string | undefined {
 	try { return normalizePath(key); } catch { return undefined; }
 }
 
+// Publish at once, so Persephone's probe on page load finds the model, then fill in the page and
+// board lists when the index arrives and refresh(): the lists' item shape is probed from index 0,
+// and refresh() tells the host to read the model again.
 async function publish() {
-	let index: SiteIndex = { pages: [], boards: [] };
+	const index: SiteIndex = { pages: [], boards: [] };
+	const remote = expose(buildModel(index));
 	try {
 		const response = await fetch(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/ai-vision/site-index.json`);
-		if (response.ok) index = await response.json();
+		if (!response.ok) return;
+		const loaded: SiteIndex = await response.json();
+		index.pages.push(...loaded.pages);
+		index.boards.push(...loaded.boards);
+		remote.refresh();
 	} catch {
 		// The model still describes the current page without the index.
 	}
-	expose(buildModel(index));
 }
 
 void publish();
