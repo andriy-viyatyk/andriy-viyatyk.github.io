@@ -1,0 +1,14 @@
+{
+  "name": "weather-station",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "collect": "tsx src/index.ts collect",
+    "report": "tsx src/index.ts report"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

@@ -13,11 +13,16 @@ video can be updated by editing text or swapping one screenshot, instead of re-r
 | `av-grid-demo.mp4` | `AvGrid` | [src/av-grid/AvGrid.tsx](src/av-grid/AvGrid.tsx) | `/grid/` ([page](../src/content/docs/grid/index.mdx)) | `npm run render:av-grid` |
 | `persephone-home.mp4` | `HomeLoop` | [src/persephone/HomeLoop.tsx](src/persephone/HomeLoop.tsx) | `/` ([page](../src/content/docs/index.mdx)) | `npm run render:home` |
 | `persephone-torrent-demo.mp4` | — (a real screen recording) | [fixtures/torrent-demo/scenes.js](fixtures/torrent-demo/scenes.js) | `/boards/torrent-viewer/` ([template](../src/pages/boards/%5Bid%5D.astro)) | recorded in Persephone, see its recipe |
+| `persephone-workspace-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `workspace-*.js` | `/persephone/workspace/` ([page](../src/content/docs/persephone/workspace/index.mdx)) | recorded in Persephone, see its recipe |
+| `persephone-install-board-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `install-board-*.js` | `/persephone/boards/installing/` ([page](../src/content/docs/persephone/boards/installing.mdx)) | recorded in Persephone, see its recipe |
+| `persephone-site-extensions.mp4` | `SiteExtensions` | [src/persephone/SiteExtensions.tsx](src/persephone/SiteExtensions.tsx) | `/persephone/site-extensions/` ([page](../src/content/docs/persephone/site-extensions/index.mdx)) | `npm run render:site-extensions` |
 
-One video is the exception: `persephone-torrent-demo.mp4` is a **real screen recording** made by
-Persephone's own recorder (`window.screen.recording`), with a scripted cursor and tooltips drawn on
-top. Use that method when the point is live behavior (streaming, loading, playback) that
-screenshots can't show; its recipe is at the end.
+Three videos are the exception: `persephone-torrent-demo.mp4`, `persephone-workspace-demo.mp4` and
+`persephone-install-board-demo.mp4` are **real screen recordings** made by Persephone's own recorder
+(`window.screen.recording`), with a scripted cursor and tooltips drawn on top. Use that method when
+the point is live behavior (streaming, loading, a real install flow) that screenshots can't show;
+their recipes are at the end. The feature recordings run against the **demo data** profile (below),
+never against the author's own data.
 
 `persephone-demo.mp4`, the author's own screen capture, was the home-page clip before
 `persephone-home.mp4`. It is still in the `media` release as a backup.
@@ -371,6 +376,92 @@ the recording. Persephone has no built-in agent pointer yet (a backlog item); un
   Put more in one scene to tighten the clip.
 - The recording has a variable frame rate (frames only when the screen changes, ~16 fps average),
   which is fine for the web.
+
+## Demo data: a clean Persephone profile for recordings
+
+Persephone keeps everything a video could show in `%APPDATA%\persephone`: app-bar folders, recent
+files, open tabs, installed and trusted boards, site extensions, settings (`data\`), and browser
+cookies and history (`Partitions\`, `Local Storage\`). Feature recordings swap these for a demo
+profile, so no real folder, board or history appears.
+
+1. **Close Persephone** (dev build and installed app share the folder). The script refuses while the
+   profile lockfile is held.
+2. `powershell -File video/scripts/demo-data.ps1 use` renames `data` → `data-user` (same for the
+   other two) and `demo-data` → `data`. A marker file records the state; `status` prints it.
+3. Start Persephone (`npm start` in the persephone repo). **First use only**, on the empty profile:
+   - enable MCP: write `{ "mcp.enabled": true }` to `%APPDATA%\persephone\data\appSettings.json`
+     (it applies without a restart), and `"secondary-views.width": 320` to `uiPreferences.json`
+     (read at app start: restart once);
+   - `node video/scripts/demo-workspace.mjs` copies [fixtures/persephone/](fixtures/persephone) to
+     `C:\Demo` and makes `weather-station` a small git repo;
+   - `app.menuFolders.add({ name: "Projects", path: "C:/Demo" })`;
+   - register `C:\Demo\weather-station\.persephone\boards\Station Dashboard` with
+     `boards.registerBoard` and **Trust Board**. Pass the root with **backslashes**: a `/` root is
+     stored as-is and the board then fails with "The board pipe host does not own this board root".
+4. Record. When done, close Persephone and run `demo-data.ps1 restore`. The demo profile stays as
+   `demo-data` for next time.
+
+The agent's MCP connection does not come back after Persephone restarts mid-session;
+[scripts/mcp-call.mjs](scripts/mcp-call.mjs) talks to the server directly, and
+[scripts/scene.mjs](scripts/scene.mjs) runs scene files through `script.execute`
+(`--take` starts the real recording, `--wait <flag>` waits for a scene that answers its own dialog).
+
+**Privacy mask**: some Persephone screens print the install path, `C:\Users\<name>\AppData\…`
+(Board Info, the trust dialog, Tools & Editors). [fixtures/feature-demos/helpers.js](fixtures/feature-demos/helpers.js)
+installs a MutationObserver that shows the user-name segment as `demo` in every text node and
+`title` before the frame paints. Check the frames for any other path before publishing.
+
+## Recipe: Workspace (screen recording, 65 s)
+
+**What it shows**: Menu → **Projects** (`C:\Demo`) → double-click `weather-station` opens it as a
+workspace tab → the Explorer (callout) → README preview, `src/sensors.ts`, `data/readings.csv` →
+**Grid (CSV)** (callout on the editor switch) → **Search** "temperature" (callout) → click the
+`values.push` hit in `report.ts` → **Boards** panel (callout) → **Station Dashboard** opens.
+
+1. Demo data active, Persephone running, window 0 is the demo profile's only window.
+2. `node video/scripts/scene.mjs video/fixtures/feature-demos/reset.js` (closes all tabs, sizes the
+   window to 1296x968), then paste [scripts/demo-overlay.js](scripts/demo-overlay.js) and
+   `fixtures/feature-demos/helpers.js` through `script.execute` (or `scene.mjs` both).
+3. Dry run: `scene.mjs workspace-1.js workspace-2.js workspace-3.js workspace-4.js`. Then reset,
+   re-install overlay + helpers, and the take: the same four files with `--take`. Scene 4 stops the
+   recording and returns the temp path.
+4. Copy to `out/persephone-workspace-demo.mp4`, `node scripts/finish.mjs persephone-workspace-demo 41`.
+
+Gotchas: a folder row's **name** opens Folder View; its chevron (`__ws.chevron(name)`) expands it.
+A search jump in a short file lands the match under Monaco's sticky-scroll header (a Persephone
+bug); scene 3 calls `revealLine(15)` again. Park the real pointer after each click
+(`__ws.click` does), or hover tooltips block the next click.
+
+## Recipe: Installing boards (screen recording, 56 s)
+
+**What it shows**: the weather-station workspace → `docs/september-report.docx` opens as an
+**Archive** (no viewer yet) → callout on **+** → Board Info: **Word Viewer** from the catalog →
+**Download** → **Register board** → the trust dialog (callout) → **Trust Board** → **Word** in the
+editor switch renders the report (callout) → Menu → **Tools & Editors → Boards** (callout).
+
+The `.docx` is a fixture built by hand (OOXML parts zipped with `/` entry names: .NET's
+`ZipFile.CreateFromDirectory` on Windows PowerShell 5.1 writes `\` names that viewers reject).
+
+1. Word Viewer must **not** be installed: `install-board-uninstall.js` starts `boards.uninstallBoard`
+   and you answer **Delete** (and **Close board & continue** if it is open) via `dialogs[0].click`.
+2. Reset, overlay, helpers (with the privacy mask) as above; `install-board-0-setup.js` opens the
+   workspace tab with `docs/` expanded.
+3. Take: `scene.mjs --take install-board-1.js install-board-2.js --wait __b2done`, then
+   `scene.mjs install-board-3.js` (stops the recording). Scene 2 clicks **Register board** without
+   awaiting it: that click resolves only when the dialog it opens is answered.
+4. Copy to `out/persephone-install-board-demo.mp4`, `node scripts/finish.mjs persephone-install-board-demo 36`.
+   To retake, uninstall Word Viewer first.
+
+## Recipe: Site Extensions (`SiteExtensions`, 44 s)
+
+**What it shows**: an animated diagram, no screenshots. Title → **Without an extension**: the agent
+asks a question, `snapshot()` pours the whole page back, a counter runs to 18,000 characters (the
+default snapshot budget), "and again tomorrow" → **With a site extension**: `extension.js → app
+model` appears in the page, the **Trust** bar is answered, the agent calls `.app.tickets` and gets
+three ids back (~110 characters), `read("T-142")` only on request → four benefit cards → end card.
+The site is the fictional `tracker.example.com`. Facts come from Persephone's guides
+`assets/guides/site-extensions.md` and `assets/guides/agents/site-extensions.md`; re-check them
+when the feature changes. `npm run render:site-extensions` (poster at 25 s).
 
 ## Publishing
 

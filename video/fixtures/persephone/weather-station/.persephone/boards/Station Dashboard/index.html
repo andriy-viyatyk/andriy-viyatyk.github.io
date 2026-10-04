@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Station Dashboard</title>
+    <link rel="stylesheet" href="./board-base.css" />
+    <style>
+        body { padding: var(--p-space-xl, 16px); font-family: var(--p-font-ui, "Segoe UI", sans-serif); }
+        h1 { font-size: var(--p-font-xl, 20px); margin: 0 0 4px; }
+        .sub { color: var(--p-text-muted, #9aa0a6); margin: 0 0 var(--p-space-xl, 16px); }
+        .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--p-space-lg, 12px); }
+        .card { background: var(--p-panel, #252526); border: 1px solid var(--p-border, #3c3c3c); border-radius: var(--p-radius-lg, 8px); padding: var(--p-space-lg, 12px) var(--p-space-xl, 16px); }
+        .card h2 { font-size: var(--p-font-md, 14px); margin: 0 0 8px; color: var(--p-text-muted, #9aa0a6); font-weight: 600; }
+        .temp { font-size: 34px; font-weight: 700; }
+        .meta { display: flex; gap: 16px; color: var(--p-text-muted, #9aa0a6); margin-top: 6px; }
+        .chart { margin-top: var(--p-space-xl, 16px); background: var(--p-panel, #252526); border: 1px solid var(--p-border, #3c3c3c); border-radius: var(--p-radius-lg, 8px); padding: var(--p-space-lg, 12px); }
+        .chart h2 { font-size: var(--p-font-md, 14px); margin: 0 0 8px; }
+        .legend { display: flex; gap: 16px; color: var(--p-text-muted, #9aa0a6); margin-top: 6px; }
+        .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+        svg { width: 100%; height: 220px; display: block; }
+    </style>
+</head>
+<body>
+    <h1>Station Dashboard</h1>
+    <p class="sub">Last reading per station, and today's temperature by hour.</p>
+    <div class="cards" id="cards"></div>
+    <div class="chart"><h2>Temperature, °C</h2><svg id="chart" viewBox="0 0 720 220" preserveAspectRatio="none"></svg><div class="legend" id="legend"></div></div>
+    <script src="./readings.js"></script>
+    <script src="./app.js"></script>
+</body>
+</html>

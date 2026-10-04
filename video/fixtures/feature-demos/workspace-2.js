@@ -1,0 +1,28 @@
+const { sleep, vis, rect } = __ws;
+const ex = rect(vis('[data-name="explorer"]'));
+await __demo.move(ex.x + ex.w * 0.6, ex.y + 200, 900);
+__demo.show({ x: ex.x, y: ex.y, w: ex.w, h: 240 }, 'The folder is now a workspace', 'Each tab carries its own Explorer, rooted at the project', 'right', 4);
+await sleep(3800);
+__demo.hide();
+await sleep(300);
+await __ws.click(__ws.explorerRow('README.md'));
+await sleep(1800);
+await __ws.click(__ws.chevron('src'));
+await sleep(500);
+await __ws.click(__ws.explorerRow('sensors.ts'));
+await sleep(1800);
+await __ws.click(__ws.chevron('data'));
+await sleep(500);
+await __ws.click(__ws.explorerRow('readings.csv'));
+await sleep(1500);
+
+const sw = __ws.byText(vis('[data-name="page-editor-switch"]'), 'Grid (CSV)');
+await __ws.click(sw);
+await sleep(1200);
+const s = rect(vis('[data-name="page-editor-switch"]'));
+await __demo.move(s.x + s.w * 0.7, s.y + s.h * 0.7, 500);
+__demo.show(s, 'The right editor for every file', 'Markdown preview, code, and CSV or JSON as a sortable grid', 'below', 5);
+await sleep(3800);
+__demo.hide();
+await sleep(300);
+return app.pages.all.map(p => p.title);

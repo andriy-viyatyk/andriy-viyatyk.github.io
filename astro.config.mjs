@@ -33,6 +33,7 @@ export default defineConfig({
 					label: 'Persephone',
 					items: [
 						{ label: 'Overview', slug: 'persephone' },
+						{ label: 'Workspace', slug: 'persephone/workspace' },
 						{
 							label: 'Boards',
 							items: [
@@ -40,6 +41,7 @@ export default defineConfig({
 								{ label: 'Board catalog', link: '/boards/' },
 							],
 						},
+						{ label: 'Site Extensions', slug: 'persephone/site-extensions' },
 					],
 				},
 				{

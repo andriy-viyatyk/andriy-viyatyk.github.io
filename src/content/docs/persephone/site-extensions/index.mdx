@@ -1,0 +1,60 @@
+---
+title: Site Extensions
+description: Let your AI agent learn a website once — a small script that turns the page into a model the agent can call, instead of re-reading it every time.
+sidebar:
+  label: Site Extensions
+  order: 3
+---
+
+import DemoClip from '../../../../components/DemoClip.astro';
+
+Your agent can already read and drive any page in Persephone's browser: it takes a snapshot, finds
+what it needs and clicks. That works for a one-off task. For a site you open **every day** — your
+issue tracker, your mail, an admin console — a **site extension** saves the agent from re-reading
+the whole page for every question.
+
+A site extension is a small script your agent writes for one site. It runs in that site's page and
+exposes a **model**: the data and actions that matter, such as `tickets`, `read(id)` or
+`open(id)`. From then on the agent asks the model instead of parsing the page.
+
+<DemoClip
+	src="persephone-site-extensions.mp4"
+	poster="persephone-site-extensions.jpg"
+	caption="Without an extension the agent re-reads a page snapshot for every question. With one, it calls a small model the extension exposes, after you trust it for that host."
+/>
+
+## How it works
+
+1. **The agent studies the page.** It looks at the page's structure (tags, roles, counts), not
+   your content.
+2. **It writes the extension.** A `manifest.json` with the exact hostnames, and an `extension.js`
+   that exposes the model. Extensions live in your site extensions folder.
+3. **You trust it.** A **Trust** bar appears above the page, naming the extension and its hosts.
+   Nothing runs until you click **Trust**.
+4. **The agent uses the model.** It calls the model on the page, for example
+   `pages[3].editor.app.tickets`, and falls back to snapshots only for what the model doesn't cover.
+
+## Why use one
+
+- **Faster, cheaper answers.** A page snapshot can run to about 18,000 characters, and the agent
+  reads it again for every question. A model usually answers in a few hundred characters.
+- **Reliable.** The model is built on stable ids and roles, so it doesn't break when rows move or
+  the layout changes a little.
+- **Learned once, used every day.** The extension stays on disk, so every new agent session can
+  use it straight away.
+- **Content on request only.** A well-built model lists headers and ids and returns a body only
+  when the agent explicitly calls `read(id)`.
+
+## You stay in control
+
+- **Trust per host.** An extension runs only on the hostnames it lists, after you trust it. If its
+  host list changes, Persephone asks again.
+- **Never in private pages.** Site extensions don't run in Incognito or Tor pages.
+- **Easy to switch off.** **Tools & Editors → Site extensions** lists every extension, with a switch
+  to disable it, **revoke trust**, open its folder, or remove it.
+
+## Try it
+
+Open the site in Persephone's browser and ask your agent: _"build a site extension for this page so
+you can list and read the items without snapshots"_. When the **Trust** bar appears, review what
+it says and click **Trust**.

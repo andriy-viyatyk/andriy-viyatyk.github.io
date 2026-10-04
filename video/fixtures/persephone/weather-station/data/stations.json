@@ -1,0 +1,5 @@
+[
+  { "id": "garden", "name": "Garden", "url": "http://192.168.0.21" },
+  { "id": "roof", "name": "Roof", "url": "http://192.168.0.22" },
+  { "id": "lake", "name": "Lake shore", "url": "http://192.168.0.23" }
+]
