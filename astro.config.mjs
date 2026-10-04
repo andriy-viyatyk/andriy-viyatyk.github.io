@@ -45,6 +45,11 @@ export default defineConfig({
 						{ label: 'Live demo ↗', link: 'https://andriy-viyatyk.github.io/av-grid/' },
 					],
 				},
+				{
+					// src/routeData.ts appends the most recent posts to this group.
+					label: 'Posts',
+					items: [{ label: 'All posts', link: '/blog/' }],
+				},
 			],
 		}),
 	],
