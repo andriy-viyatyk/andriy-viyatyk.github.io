@@ -19,6 +19,26 @@ export async function getStaticPaths() {
 }
 
 const { board } = Astro.props as { board: Board };
+// Longer, site-only notes for a board, shown under its clip or screenshot. The manifest's
+// one-line description (also shown in Persephone's catalog) stays short.
+const boardDetails: Record<string, { heading: string; html: string }> = {
+	'torrent-viewer': {
+		heading: 'More than a torrent downloader',
+		html: `<p>Torrent Viewer also adds a <strong>content provider</strong> to Persephone. It registers the
+<code>magnet:</code> and <code>torrent:</code> link schemes, so every file inside a torrent gets its own link,
+such as <code>torrent://&lt;info-hash&gt;/&lt;path&gt;</code>.</p>
+<p>Persephone's editors and other boards read that link like any other source in the content pipe.
+The bytes stream straight from the swarm, piece by piece, as the reader asks for them:</p>
+<ul>
+<li>the video player starts playing before the download finishes, and seeking fetches only the part it jumps to;</li>
+<li>an image, PDF or text file opens in its usual editor or viewer board, with no copy on disk;</li>
+<li>downloaded pieces stay in memory. A file is saved only when you choose <em>Download this file</em>.</li>
+</ul>
+<p>Magnet links from web pages, <code>.torrent</code> files and <code>.torrent</code> download links all open in the board.
+The status bar of a page that is reading a torrent shows its live peers and download speed.</p>`,
+	},
+};
+const details = boardDetails[board.id];
 const demo = demoClips[board.id];
 const screenshot = demo ? undefined : screenshotUrl(board);
 const sizeKb = Math.round(board.archive.size / 1024);
@@ -29,6 +49,13 @@ const sizeKb = Math.round(board.archive.size / 1024);
 
 	{demo && <DemoClip src={demo.src} poster={demo.poster} caption={demo.caption} />}
 	{screenshot && <img src={screenshot} alt={`${board.name} in Persephone`} width="1120" height="700" />}
+
+	{details && (
+		<>
+			<h2>{details.heading}</h2>
+			<Fragment set:html={details.html} />
+		</>
+	)}
 
 	<table>
 		<tbody>
