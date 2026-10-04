@@ -2,29 +2,29 @@
 // Screenshots in public/ were taken from a clean 1296x968 Persephone window through the MCP `call`
 // tool; the terminal text is real `call` output, shortened.
 import type { ReactNode } from 'react';
-import { AbsoluteFill, Sequence, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import {
 	Appear,
-	Background,
+	BottomRight,
 	Caption,
+	Code,
+	FULL,
 	mono,
 	palette,
 	sans,
-	sceneOpacity,
-	Shot,
+	Scene,
+	ScenePlayer,
+	ShotSequence,
+	Swap,
 	Terminal,
+	totalDuration,
 	tween,
 	usePop,
-	type CameraKey,
-	type Mark,
+	type SceneDef,
 	type TermLine,
 } from '../kit';
 
-const SHOT_W = 1296;
-const SHOT_H = 968;
-const FULL: Omit<CameraKey, 'at'> = { x: SHOT_W / 2, y: SHOT_H / 2, scale: 1.0 };
-
-const scenes: { id: string; duration: number; render: (duration: number) => ReactNode }[] = [
+const scenes: SceneDef[] = [
 	{ id: 'title', duration: 120, render: (d) => <TitleScene duration={d} /> },
 	{ id: 'one-tool', duration: 300, render: (d) => <OneToolScene duration={d} /> },
 	{ id: 'paths', duration: 270, render: (d) => <PathsScene duration={d} /> },
@@ -35,34 +35,9 @@ const scenes: { id: string; duration: number; render: (duration: number) => Reac
 	{ id: 'end', duration: 150, render: (d) => <EndScene duration={d} /> },
 ];
 
-export const AI_VISION_DURATION = scenes.reduce((sum, s) => sum + s.duration, 0);
+export const AI_VISION_DURATION = totalDuration(scenes);
 
-export const AiVision = () => {
-	let from = 0;
-	return (
-		<AbsoluteFill>
-			<Background />
-			{scenes.map((scene) => {
-				const start = from;
-				from += scene.duration;
-				return (
-					<Sequence key={scene.id} from={start} durationInFrames={scene.duration} name={scene.id}>
-						{scene.render(scene.duration)}
-					</Sequence>
-				);
-			})}
-		</AbsoluteFill>
-	);
-};
-
-const Scene = ({ duration, children }: { duration: number; children: ReactNode }) => {
-	const frame = useCurrentFrame();
-	return <AbsoluteFill style={{ opacity: sceneOpacity(frame, duration) }}>{children}</AbsoluteFill>;
-};
-
-const Code = ({ children, color = palette.accent }: { children: ReactNode; color?: string }) => (
-	<span style={{ fontFamily: mono, color, fontWeight: 600 }}>{children}</span>
-);
+export const AiVision = () => <ScenePlayer scenes={scenes} />;
 
 // ---------------------------------------------------------------------------------------------
 
@@ -252,31 +227,6 @@ const PathsScene = ({ duration }: { duration: number }) => {
 };
 
 // ---------------------------------------------------------------------------------------------
-
-/** Cross-fades between screenshots: each entry is shown from its `at` frame. */
-const ShotSequence = ({ shots, keys }: { shots: { src: string; at: number; marks?: Mark[] }[]; keys: CameraKey[] }) => {
-	const frame = useCurrentFrame();
-	return (
-		<>
-			{shots.map((s, i) => {
-				const next = shots[i + 1];
-				const fadeIn = i === 0 ? 1 : tween(frame, [s.at, s.at + 10], [0, 1]);
-				const fadeOut = next ? tween(frame, [next.at + 10, next.at + 11], [1, 0]) : 1;
-				return <Shot key={s.src} src={s.src} width={SHOT_W} height={SHOT_H} keys={keys} marks={s.marks} opacity={fadeIn * fadeOut} />;
-			})}
-		</>
-	);
-};
-
-const Swap = ({ from, until, children }: { from: number; until?: number; children: ReactNode }) => (
-	<Appear at={from} until={until} dy={30}>
-		{children}
-	</Appear>
-);
-
-const BottomRight = ({ children }: { children: ReactNode }) => (
-	<AbsoluteFill style={{ justifyContent: 'flex-end', alignItems: 'flex-end', padding: '0 40px 40px 0' }}>{children}</AbsoluteFill>
-);
 
 const BoardScene = ({ duration }: { duration: number }) => (
 	<Scene duration={duration}>

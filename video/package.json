@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "studio": "remotion studio",
-    "render:ai-vision": "remotion render AiVision out/ai-vision-demo.mp4 --codec h264 --crf 20 --pixel-format yuv420p"
+    "render:ai-vision": "remotion render AiVision out/ai-vision-demo.mp4 --codec h264 --crf 20 --pixel-format yuv420p",
+    "render:boards-todo": "remotion render BoardsTodo out/boards-todo-demo.mp4 --codec h264 --crf 20 --pixel-format yuv420p"
   },
   "dependencies": {
     "@remotion/cli": "4.0.532",
