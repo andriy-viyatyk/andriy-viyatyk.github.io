@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Green Leaf Shop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Green Leaf Shop</h1>
+    <nav><a href="#products">Products</a> · <a href="#contact">Contact</a></nav>
+  </header>
+  <main id="products"></main>
+  <script>
+    fetch('data/products.json')
+      .then((r) => r.json())
+      .then((items) => {
+        document.getElementById('products').innerHTML = items
+          .map((p) => `<article><h2>${p.name}</h2><p>$${p.price}</p></article>`)
+          .join('');
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+[
+  { "id": 1, "name": "Monstera plant", "category": "Plants", "price": 34.9, "stock": 12, "rating": 4.8 },
+  { "id": 2, "name": "Ceramic pot, large", "category": "Pots", "price": 22.5, "stock": 30, "rating": 4.6 },
+  { "id": 3, "name": "Fiddle leaf fig", "category": "Plants", "price": 49.0, "stock": 5, "rating": 4.4 },
+  { "id": 4, "name": "Watering can", "category": "Tools", "price": 15.0, "stock": 41, "rating": 4.7 },
+  { "id": 5, "name": "Snake plant", "category": "Plants", "price": 19.9, "stock": 23, "rating": 4.9 },
+  { "id": 6, "name": "Hanging planter", "category": "Pots", "price": 17.5, "stock": 18, "rating": 4.3 },
+  { "id": 7, "name": "Pruning shears", "category": "Tools", "price": 12.0, "stock": 27, "rating": 4.5 },
+  { "id": 8, "name": "Potting soil, 10 L", "category": "Soil", "price": 9.5, "stock": 64, "rating": 4.6 },
+  { "id": 9, "name": "Pothos plant", "category": "Plants", "price": 14.0, "stock": 35, "rating": 4.8 },
+  { "id": 10, "name": "Plant mister", "category": "Tools", "price": 8.0, "stock": 50, "rating": 4.2 }
+]

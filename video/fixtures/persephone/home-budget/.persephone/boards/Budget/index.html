@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Budget</title>
+    <link rel="stylesheet" href="./board-base.css" />
+    <style>
+        html, body { height: 100%; }
+        body {
+            margin: 0; padding: 16px 20px; box-sizing: border-box; overflow: auto;
+            font-family: var(--p-font-ui, "Segoe UI", sans-serif);
+        }
+        header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+        header h1 { font-size: 20px; margin: 0; font-weight: 600; }
+        header .sub { color: var(--p-text-muted); font-size: 13px; }
+        .kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+        .card {
+            background: var(--p-panel); border: 1px solid var(--p-border);
+            border-radius: 6px; padding: 12px 14px; min-width: 0;
+        }
+        .kpi .label { font-size: 12px; color: var(--p-text-muted); text-transform: uppercase; letter-spacing: .04em; }
+        .kpi .value { font-size: 26px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
+        .kpi .value.accent { color: var(--p-accent); }
+        .kpi .note { font-size: 12px; color: var(--p-text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 12px; }
+        .card h2 { font-size: 13px; font-weight: 600; margin: 0 0 10px; color: var(--p-text); }
+        .chart-box { position: relative; height: 320px; }
+        ol.top { list-style: none; margin: 0; padding: 0; counter-reset: rank; }
+        ol.top li {
+            display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; align-items: center; gap: 8px;
+            padding: 7px 0; border-bottom: 1px solid var(--p-border); counter-increment: rank;
+        }
+        ol.top li:last-child { border-bottom: none; }
+        ol.top li::before { content: counter(rank); color: var(--p-text-muted); font-size: 12px; text-align: right; }
+        .item-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-meta { font-size: 12px; color: var(--p-text-muted); display: flex; gap: 6px; align-items: center; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .amount { font-variant-numeric: tabular-nums; font-weight: 600; }
+        .error { color: var(--p-error); }
+        @media (max-width: 760px) { .grid, .kpis { grid-template-columns: minmax(0, 1fr); } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 id="title">Budget</h1>
+        <span class="sub" id="subtitle"></span>
+    </header>
+    <section class="kpis">
+        <div class="card kpi" data-name="month-total">
+            <div class="label">Month total</div>
+            <div class="value accent" id="total">—</div>
+            <div class="note" id="total-note"></div>
+        </div>
+        <div class="card kpi">
+            <div class="label">Top category</div>
+            <div class="value" id="top-cat">—</div>
+            <div class="note" id="top-cat-note"></div>
+        </div>
+        <div class="card kpi">
+            <div class="label">Daily average</div>
+            <div class="value" id="daily">—</div>
+            <div class="note" id="daily-note"></div>
+        </div>
+    </section>
+    <section class="grid">
+        <div class="card" data-name="category-chart">
+            <h2>Spending by category</h2>
+            <div class="chart-box"><canvas id="chart"></canvas></div>
+        </div>
+        <div class="card" data-name="top-expenses">
+            <h2>Biggest expenses</h2>
+            <ol class="top" id="top"></ol>
+        </div>
+    </section>
+    <script src="./lib/chart.umd.js"></script>
+    <script src="./chart-theme.js"></script>
+    <script src="./app.js"></script>
+</body>
+</html>

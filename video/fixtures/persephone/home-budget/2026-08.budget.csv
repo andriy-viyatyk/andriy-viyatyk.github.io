@@ -1,0 +1,33 @@
+date,category,item,amount
+2026-08-01,Rent,Monthly rent,1200.00
+2026-08-02,Groceries,Bakery,13.43
+2026-08-02,Groceries,Farmers market,20.46
+2026-08-02,Groceries,Supermarket,70.62
+2026-08-03,Transport,Bus pass,55.00
+2026-08-04,Groceries,Farmers market,28.69
+2026-08-04,Utilities,Electricity,75.36
+2026-08-04,Utilities,Internet,45.00
+2026-08-05,Groceries,Farmers market,38.33
+2026-08-05,Health,Gym,35.00
+2026-08-08,Eating out,Cafe,12.36
+2026-08-10,Groceries,Bakery,12.72
+2026-08-12,Groceries,Farmers market,19.20
+2026-08-14,Groceries,Farmers market,18.61
+2026-08-14,Groceries,Supermarket,63.00
+2026-08-18,Fun,Concert,59.97
+2026-08-18,Groceries,Supermarket,63.35
+2026-08-19,Eating out,Cafe,13.39
+2026-08-19,Groceries,Supermarket,56.51
+2026-08-19,Groceries,Supermarket,71.42
+2026-08-19,Utilities,Electricity,77.57
+2026-08-20,Eating out,Cafe,9.97
+2026-08-23,Eating out,Cafe,11.31
+2026-08-23,Groceries,Bakery,9.72
+2026-08-24,Eating out,Pizza night,28.71
+2026-08-24,Fun,Books,22.32
+2026-08-27,Fun,Cinema,19.12
+2026-08-27,Groceries,Supermarket,69.47
+2026-08-27,Utilities,Water,29.46
+2026-08-30,Eating out,Pizza night,32.61
+2026-08-31,Transport,Fuel,51.71
+2026-08-31,Utilities,Electricity,66.70

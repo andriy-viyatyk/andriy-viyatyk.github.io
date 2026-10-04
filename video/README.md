@@ -9,10 +9,10 @@ video can be updated by editing text or swapping one screenshot, instead of re-r
 |---|---|---|---|---|
 | `ai-vision-demo.mp4` | `AiVision` | [src/ai-vision/AiVision.tsx](src/ai-vision/AiVision.tsx) | `/ai-vision/` ([page](../src/content/docs/ai-vision/index.mdx)) | `npm run render:ai-vision` |
 | `boards-todo-demo.mp4` | `BoardsTodo` | [src/boards/BoardsTodo.tsx](src/boards/BoardsTodo.tsx) | `/persephone/boards/` ([page](../src/content/docs/persephone/boards/index.mdx)) | `npm run render:boards-todo` |
+| `persephone-platform.mp4` | `Platform` | [src/persephone/Platform.tsx](src/persephone/Platform.tsx) | `/persephone/` ([page](../src/content/docs/persephone/index.mdx)) | `npm run render:platform` |
 
-`persephone-demo.mp4` (home page and the Persephone overview) is **not** made here. It is the
-author's own screen capture, converted from a GIF with ffmpeg. Ask the author for a new capture
-if it needs updating.
+`persephone-demo.mp4` (the home page) is **not** made here. It is the author's own screen
+capture, converted from a GIF with ffmpeg. Ask the author for a new capture if it needs updating.
 
 ## Layout
 
@@ -179,6 +179,62 @@ addTask("Clean up old branches", "low")
 
 That gives `todo-2.png`. For `todo-1.png` (no priorities), use the git history of `todo-1.png` or
 re-record the session.
+
+## Recipe: Persephone platform (`Platform`, 95 s)
+
+**What it shows**: the plain-notepad look (a `.txt` in Monaco); built-in editors with the
+editor-switch control — Markdown preview with Mermaid, JSON as text and as Grid (JSON),
+Excalidraw (`.excalidraw` opens in the bundled Excalidraw board); folders opened as **workspace
+tabs** (`pages.openFile(folder)`), each with its own Explorer; the user + agent shared-window idea;
+and a real agent session building a board that is a **custom editor for a file type**
+(`fileMasks: ["*.budget.csv"]`, `editorPriority` 60 > Grid (CSV) 20), so the file opens in it by
+default and the switch shows `Text Editor | Grid (CSV) | Budget`.
+
+**Screenshots**: `p-notepad.png`, `p-ws-website.png` (README preview), `p-json-text.png`,
+`p-json-grid.png`, `p-excalidraw.png` — taken while only `todo.txt` and the website tab were open;
+`p-ws-website2.png`, `p-ws-budget.png` (three tabs, CSV as text) — before the agent session;
+`p-budget-viewer.png` (September in Budget), `p-budget-aug.png` (August opened afterwards — it
+opens straight in Budget).
+
+**Setup**: [fixtures/persephone/](fixtures/persephone) is copied to `C:\Demo` (a neutral path, since
+the Explorer shows it): `todo.txt`, `website/` (README with a Mermaid chart, `data/products.json`,
+`site-map.excalidraw`, html/css), `home-budget/` (two generated `*.budget.csv` months, `notes.md`).
+`home-budget/.persephone/boards/Budget` is the board the agent built — **delete it before
+re-recording the session** (and `boards.unregisterBoard` it), or the CSV already opens in Budget.
+
+1. Open a clean 1296x968 window on `C:\Demo\todo.txt` → `p-notepad`.
+2. `pages.openFile("C:\Demo\website")` (workspace tab), then
+   `pages.navigatePageTo(id, "C:\Demo\website\README.md")` → `p-ws-website`;
+   `…\data\products.json` → `p-json-text`; `page.editorSwitches.switchTo("grid-json")` → `p-json-grid`;
+   `…\site-map.excalidraw`, wait ~4 s → `p-excalidraw`. Excalidraw marks the file modified on load;
+   when navigating away, answer the Unsaved Changes dialog with **Don't Save**.
+   The sketch's coordinates are tuned to sit below Excalidraw's toolbar at this window size.
+3. Navigate the website tab back to README; `pages.openFile("C:\Demo\home-budget")` and navigate
+   it to `2026-09.budget.csv` → `p-ws-budget`; show the website tab → `p-ws-website2`.
+4. Show the budget tab and run the agent session (separate background agent):
+
+   > You are an AI agent working with the Persephone app through the `mcp__persephone__call` MCP
+   > tool (load it via ToolSearch "select:mcp__persephone__call" first). This session is being
+   > recorded for a demo video, so act like a normal agent serving this user request:
+   >
+   > USER REQUEST: "I keep my monthly expenses in *.budget.csv files (like the one open in my
+   > home-budget workspace). Make me a viewer for them: spending by category as a chart, the
+   > month's total, and the biggest expenses. It should open right away when I open one of these
+   > files."
+   >
+   > Rules: work ONLY in window N (prefix paths with `windows[N].`; read guides with the
+   > `windowIndex: N` parameter, `windows[N].guides` does not resolve). The workspace is
+   > C:\Demo\home-budget; the CSV page is `pages["<id>"]`. Put the board where the boards guide
+   > recommends for project boards (`…\.persephone\boards\`), named "Budget". Build it as a custom
+   > editor for `*.budget.csv`, the default editor for those files, using the recommended
+   > components (chart.js + its theme), with a small ai-vision `.app` model. Verify the CSV opens
+   > in it, screenshot to check, leave that page active with the Explorer visible. Don't modify the
+   > CSV files. No personal data. Reply with REPLY (3–6 lines) and LOG (8–14 entries,
+   > `path → result`, under ~90 chars, including real errors).
+
+5. Screenshot → `p-budget-viewer`; navigate the tab to `2026-08.budget.csv` → `p-budget-aug`.
+6. Put the agent's REPLY/LOG into `ASK`, `BUILD_STEPS`, `REPLY` in `Platform.tsx` (shortened).
+   Backslashes in those strings must be doubled (`\`), or JavaScript eats them (`\b` is a backspace).
 
 ## Publishing
 

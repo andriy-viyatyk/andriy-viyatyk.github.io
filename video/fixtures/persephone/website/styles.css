@@ -1,0 +1,4 @@
+body { font-family: system-ui, sans-serif; margin: 0; background: #f6f8f4; color: #1d2b1f; }
+header { padding: 24px 40px; background: #2f6b3a; color: white; }
+main { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 40px; }
+article { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px #0001; }
