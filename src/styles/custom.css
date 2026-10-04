@@ -1,3 +1,20 @@
+:root {
+	--sl-content-width: 50rem;
+}
+
+/* Wide screens: the "On this page" panel sits at the right edge of the window, and the page text
+   is centered in the space between the two panels. */
+@media (min-width: 72rem) {
+	.right-sidebar-container {
+		width: var(--sl-sidebar-width);
+	}
+
+	[data-has-sidebar][data-has-toc] .main-pane {
+		--sl-content-margin-inline: auto;
+		width: calc(100% - var(--sl-sidebar-width));
+	}
+}
+
 /* Home page (the only page with a hero): use the full width beside the sidebar. */
 html[data-has-hero] {
 	--sl-content-width: 67.5rem;
