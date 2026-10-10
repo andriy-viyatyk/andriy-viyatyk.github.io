@@ -5,7 +5,7 @@ await app.window.screen.hover('[data-name="app-header"]', { position: { x: 700, 
 await sleep(300);
 const box = vis('[data-name="mneme-search-input"]');
 const bar = rect(box.parentElement);
-__demo.show({ x: rect(box).x - 4, y: bar.y - 2, w: 1296 - rect(box).x, h: bar.h + 4 }, 'Ask in your own words', 'Hybrid search matches exact terms and meaning, so a note is found even when it uses other words', 'below', 2);
+__demo.show({ x: rect(box).x - 4, y: bar.y - 2, w: innerWidth - rect(box).x, h: bar.h + 4 }, 'Ask in your own words', 'Hybrid search matches exact terms and meaning, so a note is found even when it uses other words', 'below', 2);
 await __demo.move(rect(box).x + 160, rect(box).y + rect(box).h / 2, 1000);
 await sleep(3600);
 __demo.hide();

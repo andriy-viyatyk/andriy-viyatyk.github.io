@@ -21,6 +21,7 @@ repeats with no player; `DemoClip` renders a `.gif` as an image. The MP4 and its
 | `persephone-workspace-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `workspace-*.js` | `/persephone/workspace/` ([page](../src/content/docs/persephone/workspace/index.mdx)) | recorded in Persephone, see its recipe |
 | `persephone-install-board-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `install-board-*.js` | `/persephone/boards/installing/` ([page](../src/content/docs/persephone/boards/installing.mdx)) | recorded in Persephone, see its recipe |
 | `persephone-mneme-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `mneme-*.js` | `/persephone/mneme/` ([page](../src/content/docs/persephone/mneme/index.mdx)) | recorded in Persephone, see its recipe |
+| `ai-vision-mcp-scale.mp4` | `McpScale` | [src/ai-vision/McpScale.tsx](src/ai-vision/McpScale.tsx) | `/ai-vision/mcp-at-scale/` ([page](../src/content/docs/ai-vision/mcp-at-scale.mdx)) | `npm run render:mcp-scale` |
 | `persephone-site-extensions.mp4` | `SiteExtensions` | [src/persephone/SiteExtensions.tsx](src/persephone/SiteExtensions.tsx) | `/persephone/site-extensions/` ([page](../src/content/docs/persephone/site-extensions/index.mdx)) | `npm run render:site-extensions` |
 
 Four videos are the exception: `persephone-torrent-demo.mp4`, `persephone-workspace-demo.mp4`,
@@ -40,7 +41,7 @@ video/
   src/kit.tsx          shared building blocks (see below); start every new video from these
   src/Root.tsx         registers each video as a <Composition> (1440x1080, 30 fps, 4:3)
   src/<video>/*.tsx    one file per video: a list of scenes, each with a duration in frames
-  public/*.png         screenshots used by the scenes (committed; 1296x968)
+  public/*.png         screenshots used by the scenes (committed; captured at 864x645, see Capture size)
   fixtures/<video>/    the data and boards the screenshots were taken from (committed)
   scripts/finish.mjs   faststart + poster JPEG; runs after every render script
   scripts/gif.mjs      the looping GIF the site shows (720 px, 10 fps by default); runs after finish.mjs
@@ -62,7 +63,8 @@ Run `npm install` once and `npm run studio` to scrub through the videos in a bro
   point (in screenshot pixels) sits at the frame center, and at what zoom; the camera eases between
   keys. `ShotSequence` cross-fades screenshots taken from the same window, so the UI seems to change
   in place. `marks` draw pulsing rings around image regions (`at`, optional `until`).
-- `SHOT_W`/`SHOT_H`/`FULL` — screenshots are 1296x968; `FULL` is the whole screenshot.
+- `SHOT_W`/`SHOT_H`/`FULL` — the 1296x968 box a screenshot is drawn into; `FULL` is the whole
+  screenshot. Camera keys and ring `marks` use this box's coordinates, whatever size the PNG is.
 
 ## Workflow
 
@@ -78,6 +80,22 @@ Run `npm install` once and `npm run studio` to scrub through the videos in a bro
 5. **Show the author for review** before publishing (open the MP4 in Persephone).
 6. **Publish** (below).
 
+## Capture size
+
+The site shows a clip about **740 px wide** (the content column is at most 800 px). A 1296x968
+capture shown that small appears at about 0.5x, and the app's text becomes unreadable. So every
+video is captured from an **864x645** window (two-thirds of 1296x968):
+
+- **Remotion videos**: `Shot` stretches the PNG into the kit's 1296x968 box, so the app appears at
+  about 0.77x on the site. Camera keys and rings are in that box's coordinates: a point at (x, y)
+  in an 864x645 screenshot is at (1.5x, 1.5y).
+- **Screen recordings**: the recorder captures the window as it is, so the app appears at about
+  0.86x on the site.
+- If a screen is too cramped at 864x645, 960x717 is the fallback (about 0.69x).
+
+Videos published before this rule (all of them, as of 2026-10-10) were captured at 1296x968 and
+still need re-recording at the new size.
+
 ## Capturing screenshots from Persephone
 
 Persephone is driven through its MCP `call` tool (the `mcp__persephone__call` tool in Claude Code).
@@ -87,10 +105,11 @@ Persephone is driven through its MCP `call` tool (the `mcp__persephone__call` to
   window 0. Open a fresh window on a harmless file:
   `call("window.openNew", ["<scratch>/start.md"])` returns its index `N`; prefix every later path
   with `windows[N].`.
-- **Size it to 1296x968** (inner size; the window is frameless, so inner = outer). All camera keys
-  assume that size:
-  `call("windows[N].script.execute", ["window.resizeTo(1296, 968); await new Promise(r=>setTimeout(r,300)); return [innerWidth, innerHeight];"])`.
-  If it doesn't report 1296x968, call it again.
+- **Size it to 864x645** (inner size; the window is frameless, so inner = outer). See *Capture
+  size* below for why:
+  `call("windows[N].script.execute", ["window.resizeTo(864, 645); await new Promise(r=>setTimeout(r,300)); return [innerWidth, innerHeight];"])`.
+  If it doesn't report 864x645, call it again. **Never use `window.zoom`**: Persephone's zoom is
+  shared by every window, so it also zooms the author's main window.
 - **Screenshot**: the screenshot data is base64, so decode it before writing:
   `call("windows[N].script.execute", ["const s = await app.window.screen.screenshot(); await app.fs.writeBinary('C:/projects/andriy-viyatyk.github.io/video/public/NAME.png', Buffer.from(s.data, 'base64')); return 'ok';"])`.
   Read the PNG back to check it, for example for a leftover hover state.
@@ -132,6 +151,32 @@ architecture (one resolver on the host; boards and web pages send only their mod
 4. Terminal text in the scenes is real `call` output, shortened. If the API changed, run the same
    calls again and update the `Terminal` lines and the error scene.
 
+## Recipe: MCP at scale (`McpScale`, 72 s)
+
+**What it shows**: a wall of flat MCP tool names (real Persephone members, written the way a flat
+server would name them) with a counter to 889, the method and property count; confusable names turn
+orange. Then the same model as an ai-vision tree: `call()` → `pages` → `pages[0]` → `editor`
+(`GridEditor`) → `setSearch`. Then a real eight-call session on a products CSV, with its real
+`"filter" is not a member of GridEditor. Did you mean "filters"?` error. Then the before/after
+screenshots and a flat-vs-tree comparison card.
+
+**Numbers**: `METHODS`/`PROPERTIES` in the source are counts of `kind: "method"` and
+`kind: "property"` across `persephone/src/renderer` (412 and 477 in 5.0.10):
+`grep -rhoE 'kind: "(method|property)"' src/renderer | sort | uniq -c`. The tree's `+N more` counts
+come from the hints of `call()`, `pages`, `page.$help` and a grid editor; recount when they change.
+
+**Screenshots**: `mcp-grid-before.png`, `mcp-grid-after.png`.
+
+1. Open a clean 864x645 window `N` on a copy of
+   [fixtures/ai-vision-mcp/products.csv](fixtures/ai-vision-mcp/products.csv). It opens as text.
+2. Run the session through `call` (prefix `windows[N].`), with `hints: "always"` to read the hints:
+   `pages`, `pages[0].editorSwitches.switchTo ["grid-csv"]`, `pages[0].editor`,
+   `pages[0].editor.setCsvWithColumns [true]`, `pages[0].editor.filter ["Furniture"]` (the error),
+   `pages[0].editor.setSearch ["Furniture"]`, `pages[0].editor.visibleRowCount`.
+   Put the shortened results into `SESSION`.
+3. `mcp-grid-after`: screenshot now. `mcp-grid-before`: `clearSearch()`, `setCsvWithColumns(false)`,
+   screenshot.
+
 ## Recipe: boards todo (`BoardsTodo`, 84 s)
 
 **What it shows**: a real agent session. A user asks for a todo board, and Claude reads
@@ -149,7 +194,7 @@ two agent `ChatBubble`s.
 **Re-recording the session** (when board creation, the guide, or the bridge changes enough that
 the steps are wrong):
 
-1. Open a clean 1296x968 window `N` (above) and make an empty scratch folder `<dir>/boards`.
+1. Open a clean 864x645 window `N` (above) and make an empty scratch folder `<dir>/boards`.
 2. Start a separate general-purpose agent (Claude Code `Agent` tool, run in the background) with
    this prompt, filling in `N` and `<dir>`. Keep the same user wording, so the video's chat stays
    valid:
@@ -223,7 +268,7 @@ the Explorer shows it): `todo.txt`, `website/` (README with a Mermaid chart, `da
 `home-budget/.persephone/boards/Budget` is the board the agent built — **delete it before
 re-recording the session** (and `boards.unregisterBoard` it), or the CSV already opens in Budget.
 
-1. Open a clean 1296x968 window on `C:\Demo\todo.txt` → `p-notepad`.
+1. Open a clean 864x645 window on `C:\Demo\todo.txt` → `p-notepad`.
 2. `pages.openFile("C:\Demo\website")` (workspace tab), then
    `pages.navigatePageTo(id, "C:\Demo\website\README.md")` → `p-ws-website`;
    `…\data\products.json` → `p-json-text`; `page.editorSwitches.switchTo("grid-json")` → `p-json-grid`;
@@ -278,8 +323,8 @@ It holds 100,000 generated products with a fixed seed, so every capture has the 
 `onEdit` recomputes the derived columns and the totals row; `onVisibleRowsChange` makes the
 totals row sum only the visible rows.
 
-**Capture**: `window.openNew()` → window N, then `script.execute` `window.resizeTo(1340,1046)`. That
-makes the browser page area exactly 1296x968; check with `editor.evaluate("() => [innerWidth,
+**Capture**: `window.openNew()` → window N, then `script.execute` `window.resizeTo(908,723)`. That
+makes the browser page area exactly 864x645 (the window adds 44x78 around it); check with `editor.evaluate("() => [innerWidth,
 innerHeight]")`. Do not use `setViewport`: emulating a size larger than the webview tiles the
 screenshot. `pages.openUrlInBrowserTab("file:///…/showcase.html")`. In a `script.execute`, get the
 editor with `app.pages.findPage(id).editor` (`pages` is not a script global) and save with
@@ -349,7 +394,7 @@ the recording. Persephone has no built-in agent pointer yet (a backlog item); un
    `npx -y http-server video/fixtures/torrent-demo -p 4320 -c-1 --silent`. Serve it over http: a
    `file://` URL puts the author's user name in the address bar.
 2. **Capture window**: `window.openNew` → index *N*; `script.execute` with
-   `window.resizeTo(1296,968)`. Open `http://localhost:4320/` with
+   `window.resizeTo(864,645)`. Open `http://localhost:4320/` with
    `pages.openUrlInBrowserTab` and close the window's empty `untitled` tab. Never record the
    author's main window.
 3. **Clean state**: no torrent in the board and no board tab open. The take starts from the web
@@ -433,7 +478,7 @@ workspace tab → the Explorer (callout) → README preview, `src/sensors.ts`, `
 
 1. Demo data active, Persephone running, window 0 is the demo profile's only window.
 2. `node video/scripts/scene.mjs video/fixtures/feature-demos/reset.js` (closes all tabs, sizes the
-   window to 1296x968), then paste [scripts/demo-overlay.js](scripts/demo-overlay.js) and
+   window to 864x645), then paste [scripts/demo-overlay.js](scripts/demo-overlay.js) and
    `fixtures/feature-demos/helpers.js` through `script.execute` (or `scene.mjs` both).
 3. Dry run: `scene.mjs workspace-1.js workspace-2.js workspace-3.js workspace-4.js`. Then reset,
    re-install overlay + helpers, and the take: the same four files with `--take`. Scene 4 stops the

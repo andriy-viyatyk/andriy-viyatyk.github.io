@@ -23,7 +23,7 @@ Consult these guides before working on related tasks:
 
 ## Demo videos
 
-The site's demo videos (`ai-vision-demo.mp4`, `boards-todo-demo.mp4`, `persephone-platform.mp4`, `av-grid-demo.mp4`, `persephone-home.mp4`, `persephone-site-extensions.mp4`) are made with Remotion in
+The site's demo videos (`ai-vision-demo.mp4`, `boards-todo-demo.mp4`, `persephone-platform.mp4`, `av-grid-demo.mp4`, `persephone-home.mp4`, `persephone-site-extensions.mp4`, `ai-vision-mcp-scale.mp4`) are made with Remotion in
 [`video/`](video/README.md); `persephone-torrent-demo.mp4`, `persephone-workspace-demo.mp4` and `persephone-install-board-demo.mp4` are real
 recordings made with Persephone's own recorder and a scripted cursor overlay, against a demo data profile (their recipes are in the same README). To update one, read [video/README.md](video/README.md) first. It has
 each video's source, the Persephone features it shows, how its screenshots and agent session were

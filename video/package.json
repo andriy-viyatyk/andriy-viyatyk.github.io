@@ -9,6 +9,7 @@
 		"render:platform": "remotion render Platform out/persephone-platform.mp4 --codec h264 --crf 20 --pixel-format yuv420p && node scripts/finish.mjs persephone-platform 4 && node scripts/gif.mjs persephone-platform",
 		"render:av-grid": "remotion render AvGrid out/av-grid-demo.mp4 --codec h264 --crf 25 --pixel-format yuv420p && node scripts/finish.mjs av-grid-demo 4 && node scripts/gif.mjs av-grid-demo",
 		"render:home": "remotion render HomeLoop out/persephone-home.mp4 --codec h264 --crf 23 --pixel-format yuv420p && node scripts/finish.mjs persephone-home 2 && node scripts/gif.mjs persephone-home",
+		"render:mcp-scale": "remotion render McpScale out/ai-vision-mcp-scale.mp4 --codec h264 --crf 20 --pixel-format yuv420p && node scripts/finish.mjs ai-vision-mcp-scale 20 && node scripts/gif.mjs ai-vision-mcp-scale 960 12",
 		"render:site-extensions": "remotion render SiteExtensions out/persephone-site-extensions.mp4 --codec h264 --crf 20 --pixel-format yuv420p && node scripts/finish.mjs persephone-site-extensions 25 && node scripts/gif.mjs persephone-site-extensions 960 12"
 	},
 	"dependencies": {

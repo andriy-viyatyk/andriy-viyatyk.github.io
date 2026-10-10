@@ -1,0 +1,247 @@
+---
+title: One tool, not hundreds
+description: Why a flat list of MCP tools stops working in a large app, and how ai-vision serves a whole object model through one call tool that the agent browses like a tree.
+head:
+  - tag: title
+    content: "One tool, not hundreds – MCP for large apps | ai-vision"
+  - tag: meta
+    attrs:
+      property: og:image
+      content: https://andriy-viyatyk.github.io/media/ai-vision-mcp-scale.jpg
+sidebar:
+  label: MCP at scale
+  order: 2
+---
+
+import DemoClip from '../../../components/DemoClip.astro';
+
+MCP gives an agent a list of tools. That works well for a small server with ten or twenty tools.
+A large app is harder: loading every tool's name, description and schema up front fills the agent's
+context, and once there are dozens of tools with similar names, the agent starts picking the wrong
+one.
+
+ai-vision takes a different approach. The app exposes **one** MCP tool, `call`, and an object model
+behind it. The agent reads a short overview, then opens only the branch its task needs, one path
+segment at a time.
+
+<DemoClip src="ai-vision-mcp-scale.gif" caption="A flat list of tools next to one ai-vision tree, and a real session that finds its way through Persephone's model" />
+
+## What people run into
+
+The "too many tools" problem is well documented:
+
+- **Context.** Anthropic describes a setup of five MCP servers with 58 tools that uses about 55K
+  tokens "before the conversation even starts", and has seen tool definitions reach 134K tokens
+  ([Anthropic](https://www.anthropic.com/engineering/advanced-tool-use)).
+- **Accuracy.** With every tool in the prompt, the RAG-MCP paper measured 13.62% correct tool
+  selection, against 43.13% when tools were retrieved first
+  ([arXiv 2505.03275](https://arxiv.org/abs/2505.03275)). GitHub cut Copilot's default tools from
+  about 40 to 13 and saw success rates rise 2–5 points
+  ([GitHub](https://github.blog/ai-and-ml/github-copilot/how-were-making-github-copilot-smarter-with-fewer-tools/)).
+- **Name clashes.** Across 1,470 MCP servers, Microsoft Research found name collisions between 775
+  tools; `search` alone appears on 32 servers
+  ([Microsoft Research](https://www.microsoft.com/en-us/research/blog/tool-space-interference-in-the-mcp-era-designing-for-agent-compatibility-at-scale/)).
+- **Hard limits.** VS Code accepts at most 128 tools per request
+  ([VS Code docs](https://code.visualstudio.com/docs/copilot/chat/chat-tools)).
+
+Persephone would be well past those limits. It is a desktop notepad with editors, a browser, boards,
+a file system API and more, and its ai-vision model has **412 methods and 477 properties**, counted
+from the model's source in version 5.0.10. Written as flat MCP tools, that is close to 900 tools, or
+still hundreds if you merge the getters.
+
+## What has been tried
+
+- **Tool search in the client.** Claude Code defers MCP tools by default and loads a tool's schema
+  only when the agent asks for it ([Claude Code docs](https://code.claude.com/docs/en/mcp), and
+  Anthropic's [tool search tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool)).
+  This saves a lot of context. But the agent still picks from a flat set of names, and it looks the
+  same however the app is organized: in Persephone, "search" would match the grid's search, the
+  guides search, the Agent Tools search and the help search, side by side.
+- **Code instead of tools.** Cloudflare's [Code Mode](https://blog.cloudflare.com/code-mode/),
+  Anthropic's [code execution with MCP](https://www.anthropic.com/engineering/code-execution-with-mcp)
+  and Armin Ronacher's [one tool that takes code](https://lucumr.pocoo.org/2025/8/18/code-mcps/) give
+  the agent an API to program against. Agents are good at code, but this needs a sandbox to run
+  the code in, and the agent writes programs where a call would do.
+- **Progressive discovery.** Speakeasy's
+  [dynamic toolsets](https://www.speakeasy.com/blog/100x-token-reduction-dynamic-toolsets) and
+  [lazy-mcp](https://github.com/voicetreelab/lazy-mcp) list tools by category path first, and run a
+  chosen tool through a single "execute" tool.
+- **In the protocol.** Proposals for tool namespaces
+  ([SEP-993](https://github.com/modelcontextprotocol/modelcontextprotocol/issues/993)) and tool
+  groups ([SEP-1300](https://github.com/modelcontextprotocol/modelcontextprotocol/issues/1300)) were
+  closed without being adopted. A working group on grouping primitives continues.
+
+ai-vision belongs to the progressive-discovery family, and it is not the first to use paths or a
+single dispatching tool. What it adds is an **object model**: every node answers with its own
+members, has its own help, checks its arguments, and changes as the app changes. The rest of this
+page is about what that gives the agent.
+
+## The hierarchy is already there
+
+A large app is a hierarchy: windows hold pages, pages hold editors, an editor has rows and columns.
+A flat tool list throws that structure away, and the server's author then has to put it back by
+hand, in two places.
+
+**In the names.** To show the agent where a tool belongs, authors invent naming schemes:
+
+```text
+app_pages_open_file
+app_pages_close
+app_pages_switch_editor
+app_grid_add_rows
+app_grid_set_search
+app_browser_click
+```
+
+That's a hierarchy written as underscores. The agent has to read it out of the names, and nothing
+checks that the scheme stays consistent as the tool list grows. Microsoft Research's study above
+recommends formal namespaces for exactly this reason.
+
+**In the descriptions.** Each tool must say which area it acts on and which object it targets:
+*"Sets the search text of the grid editor on the given page. Only works when the page is open in a
+grid editor."* And because a flat tool has no "current object", nearly every tool takes the same
+`pageId` argument, with the same explanation repeated each time.
+
+In ai-vision, the hierarchy *is* the address:
+
+```text
+pages[0].editor.setSearch("Furniture")
+```
+
+The path says which page, which editor and which action. The grid editor's members list only what a
+grid can do, so the description doesn't have to explain which page or editor it means. A grid's
+`setSearch` and a browser's `type` never sit side by side in one list, so they can't be confused.
+
+## It reads like code
+
+No agent was trained on ai-vision, but it doesn't have to be. A path is how code talks to objects:
+
+- `pages[0]` is indexing into a collection.
+- `editor` is a property; `GridEditor` is its type.
+- `setSearch("Furniture")` is a method call with an argument.
+- A node's hint lists its members with their signatures, like a class outline in an IDE.
+- A wrong member name returns "Did you mean …", like a compiler error.
+
+Agents have read a huge amount of code that looks like `page.editor.setSearch(text)`, so they
+already know how to navigate classes and their members. It is the same observation behind the
+code-based approaches above, without the sandbox: the agent addresses objects the way code does,
+but each step is still a single, checked call. In Persephone, the paths are the same names as the
+scripting API, so what the agent learns through `call` also works in a script, and the other way
+round.
+
+## It changes with the app
+
+An app's state keeps changing: the user opens a page, switches a CSV to a grid, or the browser
+moves to another site. In ai-vision the tree changes with it:
+
+- **New objects appear in place.** A page that has just opened shows up under `pages`, and its
+  editor's members are the ones that editor really has. A CSV in a text editor offers text members;
+  switched to a grid, it offers `setSearch`, `addRows` and the rest.
+- **Each object has its own members.** Two browser tabs on two different sites can each publish a
+  different model at `pages[i].editor.app`, with no clash between them.
+- **The agent is told what changed.** Persephone sends events with the next result, such as "the
+  browser page navigated" or "the page's shape changed; re-read …", so the agent knows to look again.
+
+Flat MCP can change too. A server can send `notifications/tools/list_changed` and the client
+fetches a new list
+([MCP spec](https://modelcontextprotocol.io/specification/2025-11-25/server/tools)), and servers
+already use it to switch toolsets on and off. But it works differently:
+
+- **The list is per session, not per object.** A tool for "the grid on page 3" can't appear next to
+  page 3. It becomes one more global tool with a `pageId` argument.
+- **Clients differ.** Claude Code refetches the list in interactive sessions
+  ([docs](https://code.claude.com/docs/en/mcp)). Users of other clients report needing a restart
+  before new tools appear.
+- **It can cost the prompt cache.** Tool definitions sit at the start of the prompt, so a client
+  that loads tools up front has to rebuild its cache when they change
+  ([Claude Code docs](https://code.claude.com/docs/en/prompt-caching)).
+
+In ai-vision the tool list never changes: there is always one `call` tool. What changes is the data
+that `call` returns.
+
+## How the tree works
+
+Paths use the same names as the app's scripting API: `pages[0].editor.setSearch`. Each `call`
+returns the value at that path, plus a short hint that lists the members under it.
+
+- **Overview first.** `call()` with no path returns the top-level areas, what each is for, and an
+  example path.
+- **One branch at a time.** The agent sees the grid editor's 25 members only once it reaches a grid.
+  Branches it never opens cost it nothing.
+- **Help where it's needed.** `<path>.$help` gives the long-form help for one node, and
+  `helpSearch("add rows")` finds a path by what it does.
+- **Wrong names correct themselves.** A wrong member returns the valid ones, with a "Did you mean"
+  suggestion.
+- **Arguments are checked.** A wrong argument says what was expected and gives an example:
+  `Invalid argument "query" for helpSearch: received 42 (number); expected string. Example: helpSearch("grid")`.
+- **Plug-ins add a subtree.** A board or a web page publishes its own model, and it appears at
+  `pages[i].editor.app`. No new MCP server, no new tools.
+
+## A real session
+
+The user asks: *"Show only the furniture in my products.csv."* The agent has read no guide. These
+are its real calls, shortened:
+
+```text
+call()                                          → Persephone 5.0.10 · 28 members: pages, page, boards, fs, ui, …
+call("pages")                                   → 1 page: pages[0] "products.csv" (monaco) ← active
+call("pages[0].editorSwitches.switchTo", ["grid-csv"])
+call("pages[0].editor")                         → GridEditor · 7 rows · columns a, b, c, d · 25 members
+call("pages[0].editor.setCsvWithColumns", [true])
+call("pages[0].editor.filter", ["Furniture"])   ✗ "filter" is not a member of GridEditor. Did you mean "filters"?
+call("pages[0].editor.setSearch", ["Furniture"])
+call("pages[0].editor.visibleRowCount")         → 2
+```
+
+That's eight calls to one tool. Along the way the agent saw the root, the page list and one editor,
+and nothing else.
+
+## Flat tools vs. one tree
+
+| | Flat MCP tools | ai-vision `call` |
+|---|---|---|
+| Where a tool belongs | Spelled out in its name and description | Its path |
+| Which object it acts on | An id argument on every tool | The path: `pages[0].editor` |
+| Context | Every schema, or deferred schemas behind a search | The overview, then one branch |
+| Finding the right tool | Pick from a flat set of names | Follow the path; `helpSearch` when lost |
+| A wrong tool name | "Tool not found" | The valid names and "Did you mean" |
+| Tool number 500 | Makes every task a little harder | Costs nothing until it is visited |
+| When the app changes | A new list for the session, if the client refetches it | The tree changes in place; events say what changed |
+| Adding a plug-in | Another server, more tools | A board or web page adds a subtree |
+
+## The trade-offs
+
+A tree isn't free, and critics of single-tool designs make fair points:
+
+- **More round trips.** The agent explores before it acts. For a small server with a handful of
+  tools, a flat list is simpler and faster.
+- **Per-tool approval is lost.** An MCP client can ask the user before each tool runs, and can
+  auto-approve tools marked read-only. With one `call` tool, the client sees one tool. In
+  ai-vision, risky members carry a `CAUTION` note in their hint, and actions such as trusting a
+  board or registering a tool need the user's own confirmation inside the app. Other single-tool
+  designs, such as lazy-mcp, face the same issue.
+- **The client can't check arguments.** `args` is a plain array, so the client has no schema to
+  validate against. ai-vision checks arguments on the server instead and answers with what was
+  expected (see above).
+- **A wrong branch.** If the agent opens the wrong branch, it has to notice and back up. The
+  overview's descriptions and `helpSearch` exist for that.
+- **A new convention.** MCP clients and tutorials assume a list of tools, so a single `call` tool
+  looks unusual at first. The agent itself has no trouble with it (see
+  [It reads like code](#it-reads-like-code)).
+
+## Still plain MCP
+
+ai-vision doesn't need a new protocol. `call` is an ordinary MCP tool, so it works today with any
+MCP client. The same idea would fit browser proposals such as
+[WebMCP](https://github.com/webmachinelearning/webmcp), where a web page registers tools for an
+agent. A page could register one `call` tool and serve its whole model behind it, instead of
+registering hundreds of tools.
+
+## Try it, or join the discussion
+
+- See it working: enable Persephone's MCP server and ask your agent to open something in
+  [Persephone](/persephone/).
+- Use it in your own app: `npm install ai-vision`.
+  Source and docs: [github.com/andriy-viyatyk/ai-vision](https://github.com/andriy-viyatyk/ai-vision).
+- Ideas, objections and questions are welcome as
+  [GitHub issues](https://github.com/andriy-viyatyk/ai-vision/issues).
