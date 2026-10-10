@@ -215,11 +215,15 @@ A tree isn't free, and critics of single-tool designs make fair points:
 
 - **More round trips.** The agent explores before it acts. For a small server with a handful of
   tools, a flat list is simpler and faster.
-- **Per-tool approval is lost.** An MCP client can ask the user before each tool runs, and can
-  auto-approve tools marked read-only. With one `call` tool, the client sees one tool. In
-  ai-vision, risky members carry a `CAUTION` note in their hint, and actions such as trusting a
-  board or registering a tool need the user's own confirmation inside the app. Other single-tool
-  designs, such as lazy-mcp, face the same issue.
+- **Per-tool approval moves into the app.** An MCP client can ask the user before each tool runs,
+  and can auto-approve tools marked read-only. With one `call` tool, the client sees one tool, so
+  approval has to happen on the app's side. Today, risky members carry a `CAUTION` note in their
+  hint, and actions such as trusting a board or registering a tool need the user's own
+  confirmation inside the app. Next, ai-vision plans an approval hook: every read, write, and call
+  passes its path to the app first, and the app decides whether to ask the user or trust it. An
+  app can, for example, auto-approve a whole read-only branch and ask before any call that
+  writes files. A path says more than a tool name, so the rules can be finer than per-tool ones.
+  Other single-tool designs, such as lazy-mcp, face the same issue.
 - **The client can't check arguments.** `args` is a plain array, so the client has no schema to
   validate against. ai-vision checks arguments on the server instead and answers with what was
   expected (see above).
