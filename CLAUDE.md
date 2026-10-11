@@ -29,8 +29,9 @@ recordings made with Persephone's own recorder and a scripted cursor overlay, ag
 each video's source, the Persephone features it shows, how its screenshots and agent session were
 captured, and how to render and publish. Don't recreate a video from scratch.
 
-The pages show each video as a looping **GIF** (`<name>.gif`, made by `video/scripts/gif.mjs` after every
-render); the MP4 and poster stay in the `media` release as the master copy.
+The pages show each video's **MP4** through `DemoClip`, which plays it like a GIF (autoplay, muted, loop,
+no player) and reveals a play/pause button and seek bar on hover; the poster is `<name>.jpg`. The render
+scripts still make a `<name>.gif` with `video/scripts/gif.mjs`, but no page uses it.
 
 ## ai-vision model
 

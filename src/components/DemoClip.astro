@@ -1,21 +1,20 @@
 ---
 /**
- * A short, silent demo clip that starts by itself and loops. `src` is a media file name from the
- * `media` release, e.g. "persephone-demo.gif".
- *
- * A .gif renders as an image, which the site prefers: it plays at once and needs no player. An .mp4
- * still renders as a looping video (pass `controls` for one the reader should pause and seek).
+ * A short, silent demo clip that plays like a GIF: it starts by itself, loops and shows no player.
+ * Hovering or focusing it reveals a small play/pause button and a seek bar; clicking the clip
+ * toggles playback. `src` is a media file name from the `media` release, e.g. "persephone-home.mp4".
+ * The poster defaults to the clip's `<name>.jpg`. A `.gif` src still renders as a plain image.
  */
 interface Props {
 	src: string;
 	poster?: string;
 	caption?: string;
-	controls?: boolean;
 }
 
-const { src, poster, caption, controls = false } = Astro.props;
+const { src, poster, caption } = Astro.props;
 const media = (name: string) => (name.startsWith('/') || name.includes('://') ? name : `/media/${name}`);
 const isGif = src.toLowerCase().endsWith('.gif');
+const posterName = poster ?? src.replace(/\.[^./]+$/, '.jpg');
 ---
 
 <figure class="demo-clip">
@@ -23,34 +22,193 @@ const isGif = src.toLowerCase().endsWith('.gif');
 		isGif ? (
 			<img src={media(src)} alt={caption ?? ''} width="960" height="720" decoding="async" />
 		) : (
-			<video
-				src={media(src)}
-				poster={poster ? media(poster) : undefined}
-				autoplay={!controls}
-				loop={!controls}
-				muted
-				playsinline
-				controls={controls}
-				preload="metadata"
-				aria-label={caption}
-			/>
+			<div class="demo-clip-player not-content" data-demo-clip>
+				<video
+					src={media(src)}
+					poster={media(posterName)}
+					autoplay
+					loop
+					muted
+					playsinline
+					preload="auto"
+					aria-label={caption}
+				/>
+				<div class="demo-clip-controls">
+					<button type="button" class="demo-clip-toggle" aria-label="Pause">
+						<svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" /></svg>
+						<svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+					</button>
+					<input class="demo-clip-seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek" />
+					<span class="demo-clip-time">0:00 / 0:00</span>
+				</div>
+			</div>
 		)
 	}
 	{caption && <figcaption>{caption}</figcaption>}
 </figure>
+
+<script>
+	const formatTime = (seconds: number) => {
+		const whole = Math.max(0, Math.floor(seconds || 0));
+		return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, '0')}`;
+	};
+
+	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	for (const player of document.querySelectorAll<HTMLElement>('[data-demo-clip]')) {
+		const video = player.querySelector('video')!;
+		const toggle = player.querySelector<HTMLButtonElement>('.demo-clip-toggle')!;
+		const seek = player.querySelector<HTMLInputElement>('.demo-clip-seek')!;
+		const time = player.querySelector<HTMLElement>('.demo-clip-time')!;
+		let seeking = false;
+
+		// Readers who ask for reduced motion get the poster and a play button instead of autoplay.
+		if (reducedMotion) {
+			video.autoplay = false;
+			video.pause();
+		}
+
+		const showState = () => {
+			player.classList.toggle('is-paused', video.paused);
+			toggle.setAttribute('aria-label', video.paused ? 'Play' : 'Pause');
+		};
+		const showProgress = () => {
+			const duration = video.duration || 0;
+			if (!seeking && duration) seek.value = String(Math.round((video.currentTime / duration) * 1000));
+			seek.style.setProperty('--progress', `${(Number(seek.value) / 10).toFixed(1)}%`);
+			time.textContent = `${formatTime(video.currentTime)} / ${formatTime(duration)}`;
+		};
+		const togglePlay = () => (video.paused ? video.play() : video.pause());
+
+		video.addEventListener('play', showState);
+		video.addEventListener('pause', showState);
+		video.addEventListener('timeupdate', showProgress);
+		video.addEventListener('loadedmetadata', showProgress);
+		video.addEventListener('click', togglePlay);
+		toggle.addEventListener('click', togglePlay);
+
+		seek.addEventListener('input', () => {
+			seeking = true;
+			if (video.duration) video.currentTime = (Number(seek.value) / 1000) * video.duration;
+			showProgress();
+		});
+		seek.addEventListener('change', () => {
+			seeking = false;
+		});
+
+		showState();
+		showProgress();
+	}
+</script>
 
 <style>
 	.demo-clip {
 		margin: 1.5rem 0;
 	}
 	.demo-clip img,
-	.demo-clip video {
+	.demo-clip-player {
 		display: block;
 		width: 100%;
-		height: auto;
 		border-radius: 0.5rem;
 		border: 1px solid var(--sl-color-gray-5);
 		background: var(--sl-color-gray-6);
+	}
+	.demo-clip img {
+		height: auto;
+	}
+	.demo-clip-player {
+		position: relative;
+		overflow: hidden;
+	}
+	.demo-clip-player video {
+		display: block;
+		width: 100%;
+		height: auto;
+		cursor: pointer;
+	}
+	.demo-clip-controls {
+		position: absolute;
+		inset: auto 0 0 0;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 1.5rem 0.75rem 0.5rem;
+		background: linear-gradient(transparent, rgb(0 0 0 / 0.65));
+		color: white;
+		opacity: 0;
+		transition: opacity 0.2s;
+	}
+	.demo-clip-player:hover .demo-clip-controls,
+	.demo-clip-player:focus-within .demo-clip-controls,
+	.demo-clip-player.is-paused .demo-clip-controls {
+		opacity: 1;
+	}
+	@media (hover: none) {
+		.demo-clip-controls {
+			opacity: 1;
+		}
+	}
+	.demo-clip-toggle {
+		display: grid;
+		place-items: center;
+		flex: none;
+		width: 2rem;
+		height: 2rem;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: rgb(255 255 255 / 0.15);
+		color: inherit;
+		cursor: pointer;
+	}
+	.demo-clip-toggle:hover {
+		background: rgb(255 255 255 / 0.3);
+	}
+	.demo-clip-toggle svg {
+		width: 1.1rem;
+		height: 1.1rem;
+		fill: currentColor;
+	}
+	.demo-clip-player .icon-play,
+	.demo-clip-player.is-paused .icon-pause {
+		display: none;
+	}
+	.demo-clip-player.is-paused .icon-play {
+		display: block;
+	}
+	.demo-clip-seek {
+		flex: 1;
+		min-width: 0;
+		height: 0.3rem;
+		margin: 0;
+		appearance: none;
+		border-radius: 999px;
+		background: linear-gradient(
+			to right,
+			var(--sl-color-accent) var(--progress, 0%),
+			rgb(255 255 255 / 0.35) var(--progress, 0%)
+		);
+		cursor: pointer;
+	}
+	.demo-clip-seek::-webkit-slider-thumb {
+		appearance: none;
+		width: 0.85rem;
+		height: 0.85rem;
+		border: 0;
+		border-radius: 50%;
+		background: white;
+	}
+	.demo-clip-seek::-moz-range-thumb {
+		width: 0.85rem;
+		height: 0.85rem;
+		border: 0;
+		border-radius: 50%;
+		background: white;
+	}
+	.demo-clip-time {
+		flex: none;
+		font-size: var(--sl-text-xs);
+		font-variant-numeric: tabular-nums;
 	}
 	.demo-clip figcaption {
 		margin-top: 0.5rem;

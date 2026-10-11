@@ -3,15 +3,15 @@ import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import DemoClip from '../../components/DemoClip.astro';
 import { type Board, loadBoards, screenshotUrl, sourceUrl } from '../../lib/boards';
 
-// A board listed here shows a looping demo clip (from the `media` release) instead of the
+// A board listed here shows a demo clip (from the `media` release) instead of the
 // screenshot its manifest names. The catalog data comes from persephone-boards; the clips are ours.
 const demoClips: Record<string, { src: string; caption: string }> = {
 	'torrent-viewer': {
-		src: 'persephone-torrent-demo.gif',
+		src: 'persephone-torrent-demo.mp4',
 		caption: 'A magnet link from a web page opens in the Torrent Viewer; the film streams into the video player while it downloads',
 	},
 	'theme-editor': {
-		src: 'persephone-theme-editor-demo.gif',
+		src: 'persephone-theme-editor-demo.mp4',
 		caption: 'Create a theme from Settings: pick one of 100 generated themes, fine-tune its base colors, and save it as your own',
 	},
 };
@@ -47,7 +47,7 @@ const screenshot = demo ? undefined : screenshotUrl(board);
 // A board with a demo clip uses the clip's poster as its link-preview image.
 const head = [
 	{ tag: 'title' as const, content: `${board.name} – a Persephone board` },
-	...(demo ? [{ tag: 'meta' as const, attrs: { property: 'og:image', content: `https://andriy-viyatyk.github.io/media/${demo.src.replace(/.gif$/, '.jpg')}` } }] : []),
+	...(demo ? [{ tag: 'meta' as const, attrs: { property: 'og:image', content: `https://andriy-viyatyk.github.io/media/${demo.src.replace(/\.[^.]+$/, '.jpg')}` } }] : []),
 ];
 const sizeKb = Math.round(board.archive.size / 1024);
 ---

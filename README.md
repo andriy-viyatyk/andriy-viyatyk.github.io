@@ -63,11 +63,12 @@ In an `.mdx` page:
 import DemoClip from '../../../components/DemoClip.astro';
 import YouTube from '../../../components/YouTube.astro';
 
-<DemoClip src="my-clip.mp4" poster="my-clip.jpg" caption="What it shows" />
+<DemoClip src="my-clip.mp4" caption="What it shows" />   {/* poster defaults to my-clip.jpg */}
 <YouTube id="dQw4w9WgXcQ" title="A longer walkthrough" />
 ```
 
-Short clips: MP4 rather than GIF (several times smaller). Long videos with sound: YouTube.
+Short clips: MP4 rather than GIF (several times smaller). `DemoClip` plays it like a GIF (autoplay, muted,
+loop) and shows a play/pause button and seek bar on hover. Long videos with sound: YouTube.
 
 ## Commands
 

@@ -5,12 +5,12 @@ MP4). They are **not screen recordings**: each one is a set of screenshots of th
 animated captions, typing terminals, chat bubbles and camera zooms written as React scenes. So a
 video can be updated by editing text or swapping one screenshot, instead of re-recording everything.
 
-**The site shows GIFs, not MP4s.** Every video is rendered to MP4 first, then converted to a looping
-GIF by [scripts/gif.mjs](scripts/gif.mjs) (every `render:*` script does it). A GIF starts at once and
-repeats with no player; `DemoClip` renders a `.gif` as an image. The MP4 and its poster stay in the
-`media` release as the master copy and for anyone who needs a video.
+**The site shows the MP4s, played like GIFs.** `DemoClip` renders `<name>.mp4` as a muted video that
+starts at once and loops with no player; hovering it reveals a play/pause button and a seek bar, and
+its poster is `<name>.jpg`. Every `render:*` script also converts the MP4 to a looping GIF with
+[scripts/gif.mjs](scripts/gif.mjs); the GIFs stay in the `media` release, but no page uses them.
 
-| Video (site shows `<name>.gif`) | Composition | Source | On the site | Render |
+| Video | Composition | Source | On the site | Render |
 |---|---|---|---|---|
 | `ai-vision-demo.mp4` | `AiVision` | [src/ai-vision/AiVision.tsx](src/ai-vision/AiVision.tsx) | `/ai-vision/` ([page](../src/content/docs/ai-vision/index.mdx)) | `npm run render:ai-vision` |
 | `boards-todo-demo.mp4` | `BoardsTodo` | [src/boards/BoardsTodo.tsx](src/boards/BoardsTodo.tsx) | `/persephone/boards/` ([page](../src/content/docs/persephone/boards/index.mdx)) | `npm run render:boards-todo` |
@@ -45,7 +45,7 @@ video/
   public/*.png         screenshots used by the scenes (committed; captured at 864x645, see Capture size)
   fixtures/<video>/    the data and boards the screenshots were taken from (committed)
   scripts/finish.mjs   faststart + poster JPEG; runs after every render script
-  scripts/gif.mjs      the looping GIF the site shows (720 px, 10 fps by default); runs after finish.mjs
+  scripts/gif.mjs      a looping GIF copy (720 px, 10 fps by default; the site doesn't use it); runs after finish.mjs
   out/                 render output and test stills (git-ignored)
 ```
 
@@ -76,7 +76,7 @@ Run `npm install` once and `npm run studio` to scrub through the videos in a bro
    `npx remotion still <Composition> out/st/f600.png --frame=600`. Check: captions on one line,
    rings on target, the camera not cropping important UI, nothing overlapping.
 4. **Render**: `npm run render:<video>` → `out/<name>.mp4`, `out/<name>.jpg` (poster) and
-   `out/<name>.gif` (what the site shows).
+   `out/<name>.gif` (not used by the site).
    Remotion reports the pixel format as yuvj420p even with `--pixel-format yuv420p`; browsers play it.
 5. **Show the author for review** before publishing (open the MP4 in Persephone).
 6. **Publish** (below).
@@ -376,8 +376,8 @@ dense table screenshots made a 36 MB file at 20, and 17.5 MB at 25 looks the sam
 
 ## Recipe: home loop (`HomeLoop`, 45 s)
 
-**What it shows**: a silent loop for the home page, which plays it like a GIF: autoplay, loop, no
-controls. Eight screens cross-fade, each with a feature card that springs in at the bottom left:
+**What it shows**: a silent loop for the home page, which plays it like a GIF: autoplay, loop, with
+controls only on hover. Eight screens cross-fade, each with a feature card that springs in at the bottom left:
 the notepad with a title card; the website workspace, zoomed on the **Explorer**, then panned to
 Markdown + Mermaid; JSON as a grid; Excalidraw; the workspace **Boards panel** (zoom), then the
 Color Palette board; the Budget viewer, zoomed on the editor switch; the built-in browser on the
@@ -400,7 +400,7 @@ camera keys.
 
 **Render**: `npm run render:home`. It makes the MP4 (crf 23, ~7 MB), the poster and
 `out/persephone-home.gif`, which comes from [scripts/gif.mjs](scripts/gif.mjs): a two-pass,
-128-colour palette encode at 720 px and 10 fps, ~14 MB. The site shows the GIF. Remotion's ffmpeg
+128-colour palette encode at 720 px and 10 fps, ~14 MB. The site shows the MP4. Remotion's ffmpeg
 has no `fps` filter, so the script sets the frame rate with `-r`.
 
 ## Recipe: Torrent Viewer (screen recording, 46 s)
@@ -634,12 +634,10 @@ workflow downloads them into `public/media/` on every build.
 1. Back up the asset you are replacing:
    `gh release download media -p '<name>.*' -D <scratch>/old --clobber`.
 2. Upload it: `gh release upload media out/<name>.gif out/<name>.mp4 out/<name>.jpg --clobber` (keep
-   the file name when you replace a video, so the page needs no change). The GIF is what the page
-   shows; the MP4 and JPEG are the master copy.
-3. On the page, add or update `<DemoClip src="<name>.gif" caption="…" />`
-   (`.mdx` only; rename a `.md` page to `.mdx` and import `DemoClip`). Keep a GIF under ~15 MB if
-   you can: lower the width or fps (`gif.mjs <name> 640 8`), or trim the clip. av-grid (~31 MB) is the
-   largest.
+   the file name when you replace a video, so the page needs no change). The page shows the MP4 with
+   the JPEG as its poster; the GIF is an unused copy.
+3. On the page, add or update `<DemoClip src="<name>.mp4" caption="…" />`; the poster defaults to
+   `<name>.jpg` (`.mdx` only; rename a `.md` page to `.mdx` and import `DemoClip`).
 4. Commit and push. The push deploys; if only the media changed, run `gh workflow run deploy.yml`.
 5. Check the deploy (`gh run watch`), then
-   `curl -sI https://andriy-viyatyk.github.io/media/<name>.gif`. Its `Content-Length` must match the new file.
+   `curl -sI https://andriy-viyatyk.github.io/media/<name>.mp4`. Its `Content-Length` must match the new file.
