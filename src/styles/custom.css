@@ -1,16 +1,19 @@
 :root {
 	--sl-content-width: 50rem;
+	/* Verdana ships with Windows, macOS and iOS; DejaVu Sans is its look-alike on Linux; Android and
+	   anything else falls back to the system font. Code keeps Starlight's monospace stack. */
+	--sl-font: Verdana, 'DejaVu Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans', Arial, sans-serif;
 }
 
-/* Colors from Persephone's default themes, "Persephone" (dark) and "Persephone Light", in
-   persephone/src/renderer/theme/themes/. Starlight builds every surface, control, link and aside
-   from these variables:
+/* The site is dark-only (see ThemeProvider.astro). Colors from Persephone's default dark theme,
+   "Persephone", in persephone/src/renderer/theme/themes/. Starlight builds every surface, control,
+   link and aside from these variables:
    - the page is the editor ground (bg-default); the header and sidebar are the darker app chrome
      (bg-dark); inline code, raised surfaces and hairlines use bg-light and the theme's border;
    - the gray scale runs from the theme's bright text down to its darkest background;
    - the accent is Persephone's green ("AI agents"). Starlight fills highlights (the current sidebar
-     item, primary buttons, the selected search result) with text-accent and writes text-invert on
-     them: dark text on the bright green in dark mode, white on the deeper green in light mode.
+     item, primary buttons, the selected search result) with text-accent and writes dark text-invert
+     on it (about 8:1 contrast on the bright green).
      Links in page text keep the theme's link blue;
    - green, orange, red and blue (asides and badges) are the theme's success, warning, error and link
      colors, each with a low tint mixed 18% into the page background. */
@@ -58,50 +61,6 @@
 	--site-color-link: #5dade2;
 }
 
-:root[data-theme='light'],
-[data-theme='light'] ::backdrop {
-	--sl-color-white: #151f29;
-	--sl-color-gray-1: #1b2935;
-	--sl-color-gray-2: #2c3e50;
-	--sl-color-gray-3: #5d6d7e;
-	--sl-color-gray-4: #8a9aa8;
-	--sl-color-gray-5: #d0d9e0;
-	--sl-color-gray-6: #e3e9ed;
-	--sl-color-gray-7: #ecf0f1;
-	--sl-color-black: #fbfcfd;
-
-	--sl-color-accent-low: #d3e6dd;
-	--sl-color-accent: #1e8449;
-	--sl-color-accent-high: #145a32;
-
-	--sl-color-green-low: #dce5d2;
-	--sl-color-green: #4d7c0f;
-	--sl-color-green-high: #4d7c0f;
-	--sl-color-orange-low: #eae1cf;
-	--sl-color-orange: #9a6700;
-	--sl-color-orange-high: #9a6700;
-	--sl-color-red-low: #f0d9d7;
-	--sl-color-red: #c0392b;
-	--sl-color-red-high: #c0392b;
-	--sl-color-blue-low: #d3e3ee;
-	--sl-color-blue: #1f6fa8;
-	--sl-color-blue-high: #1f6fa8;
-
-	--sl-color-text-accent: var(--sl-color-accent);
-	--sl-color-text-invert: #ffffff;
-	--sl-color-bg: #fbfcfd;
-	--sl-color-bg-nav: #ecf0f1;
-	--sl-color-bg-sidebar: #ecf0f1;
-	--sl-color-bg-inline-code: #e3e9ed;
-	--sl-color-bg-accent: var(--sl-color-accent);
-	--sl-color-hairline-light: #d0d9e0;
-	--sl-color-hairline: #d0d9e0;
-	--sl-color-hairline-shade: #d0d9e0;
-	--sl-color-backdrop-overlay: rgb(44 62 80 / 0.45);
-
-	--site-color-link: #1f6fa8;
-}
-
 /* Links in page text use the theme's link blue; the accent green stays for navigation. */
 .sl-markdown-content a:not(:where(.not-content *)) {
 	color: var(--site-color-link);
@@ -134,8 +93,20 @@ html[data-has-hero] {
 	grid-template-columns: 100%;
 }
 
+/* Narrower heading and tagline so neither leaves one word alone on its last line. */
+.hero h1 {
+	max-width: 13em;
+}
+
 .hero .tagline {
-	max-width: 65ch;
+	max-width: 46rem;
+}
+
+/* The demo clip below belongs with the hero: keep it close (about 56px from the buttons). */
+@media (min-width: 50rem) {
+	.hero {
+		padding-bottom: 2rem;
+	}
 }
 
 /* Header: Starlight lines the search box up with the content column, which the overrides above move,
@@ -143,5 +114,128 @@ html[data-has-hero] {
 @media (min-width: 50rem) {
 	.header > div:nth-child(2) {
 		justify-content: flex-end;
+	}
+}
+
+/* The header search box is only a button that opens the search dialog (it never shows a query), so
+   every width gets the magnifier icon Starlight shows on phones. Ctrl+K still opens it. */
+@media (min-width: 50rem) {
+	site-search button[data-open-modal] {
+		width: auto;
+		padding: 0;
+		border: 0;
+		background-color: transparent;
+		color: var(--sl-color-gray-2);
+		font-size: var(--sl-text-xl);
+	}
+
+	site-search button[data-open-modal]:hover {
+		color: var(--sl-color-white);
+	}
+
+	site-search button[data-open-modal] > :not(svg) {
+		display: none !important;
+	}
+}
+
+/* Starlight draws a divider between the social icons and the theme picker; the site has no picker. */
+.header .social-icons::after {
+	content: none;
+}
+
+/* Hover changes ease in instead of snapping: links, buttons, cards, sidebar items, the search box. */
+:root {
+	--site-hover-duration: 0.3s;
+}
+
+a,
+button,
+summary,
+.sl-link-button,
+.sl-link-card,
+.sl-anchor-link {
+	transition:
+		color var(--site-hover-duration),
+		background-color var(--site-hover-duration),
+		border-color var(--site-hover-duration),
+		opacity var(--site-hover-duration);
+}
+
+/* No single word left alone on the last line of a heading, paragraph or list item. */
+.sl-markdown-content :is(h1, h2, h3, h4) {
+	text-wrap: balance;
+}
+
+.sl-markdown-content :is(p, li) {
+	text-wrap: pretty;
+}
+
+/* Paragraphs keep a readable line length; lists, tables, cards and clips still use the full column. */
+.sl-markdown-content p:not(:where(.not-content *)) {
+	max-width: 70ch;
+}
+
+/* Sections: more room above a section heading, a little more between a heading and its content. */
+.sl-markdown-content .sl-heading-wrapper.level-h2 + *,
+.sl-markdown-content h2 + * {
+	margin-top: 1.25rem;
+}
+
+/* Section gaps: 64px on doc pages, 80px on the landing page, which has only a few sections. Board
+   pages write plain h2 elements (no anchor wrapper), so both forms are covered. */
+.sl-markdown-content :not(h1, h2, h3, h4, h5, h6, .sl-heading-wrapper) + :is(.sl-heading-wrapper.level-h2, h2) {
+	margin-top: 4rem;
+}
+
+html[data-has-hero] .sl-markdown-content :not(h1, h2, h3, h4, h5, h6, .sl-heading-wrapper) + .sl-heading-wrapper.level-h2 {
+	margin-top: 5rem;
+}
+
+/* Heading anchor link: a smaller icon, centered on the heading text, that fades in. */
+.sl-markdown-content .sl-heading-wrapper {
+	--sl-anchor-icon-size: 0.6em;
+}
+
+/* Buttons (the home page hero): slimmer and wider, a lighter icon that matches the text, and a hover
+   state like the cards and the search box have. */
+.sl-link-button {
+	padding: 0.75rem 1.5rem;
+}
+
+.sl-link-button svg {
+	width: 1.125rem;
+	height: 1.125rem;
+}
+
+.sl-link-button.primary:hover {
+	background: var(--sl-color-green);
+	border-color: var(--sl-color-green);
+}
+
+.sl-link-button.secondary:hover {
+	border-color: var(--sl-color-text-accent);
+	color: var(--sl-color-text-accent);
+}
+
+/* Sidebar: more room between the top-level groups and around nested items. */
+@media (min-width: 50rem) {
+	.sidebar-content .top-level > li + li {
+		margin-top: 1rem;
+	}
+}
+
+.sidebar-content ul ul li + li {
+	margin-top: 0.25rem;
+}
+
+.sidebar-content details > ul {
+	margin-top: 0.25rem;
+}
+
+/* Search dialog: just the search box until there are results, then it grows to fit them (Starlight
+   reserves 15rem of empty space below the box). */
+@media (min-width: 50rem) {
+	site-search dialog {
+		min-height: 0;
 	}
 }

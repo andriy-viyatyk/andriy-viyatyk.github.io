@@ -1,0 +1,10 @@
+---
+/**
+ * The site is dark-only: replaces Starlight's ThemeProvider, which picks light or dark from the
+ * stored choice or the system setting. Inlined so the first paint is already dark.
+ */
+---
+
+<script is:inline>
+	document.documentElement.dataset.theme = 'dark';
+</script>

@@ -42,7 +42,7 @@ const boards = await loadBoards();
 	.board-card {
 		display: flex;
 		flex-direction: column;
-		gap: 0.4rem;
+		gap: 0.25rem;
 		padding: 0.75rem;
 		border: 1px solid var(--sl-color-gray-5);
 		border-radius: 0.5rem;
@@ -56,6 +56,8 @@ const boards = await loadBoards();
 	.board-card img {
 		width: 100%;
 		height: auto;
+		/* More room between the screenshot and the text than inside the text. */
+		margin-bottom: 0.75rem;
 		border-radius: 0.3rem;
 	}
 	.board-name {

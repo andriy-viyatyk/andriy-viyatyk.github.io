@@ -79,6 +79,15 @@ const posterName = poster ?? src.replace(/\.[^./]+$/, '.jpg');
 			time.textContent = `${formatTime(video.currentTime)} / ${formatTime(duration)}`;
 		};
 		const togglePlay = () => (video.paused ? video.play() : video.pause());
+		// Cap the clip at 80% of the window height (laptops): the player narrows to the width that
+		// height allows, keeping the clip's own aspect ratio.
+		const fitHeight = () => {
+			if (video.videoWidth && video.videoHeight) {
+				player.style.setProperty('--clip-aspect', String(video.videoWidth / video.videoHeight));
+			}
+		};
+		video.addEventListener('loadedmetadata', fitHeight);
+		fitHeight();
 
 		video.addEventListener('play', showState);
 		video.addEventListener('pause', showState);
@@ -103,7 +112,7 @@ const posterName = poster ?? src.replace(/\.[^./]+$/, '.jpg');
 
 <style>
 	.demo-clip {
-		margin: 1.5rem 0;
+		margin: 1.5rem 0 4rem;
 	}
 	.demo-clip img,
 	.demo-clip-player {
@@ -119,6 +128,9 @@ const posterName = poster ?? src.replace(/\.[^./]+$/, '.jpg');
 	.demo-clip-player {
 		position: relative;
 		overflow: hidden;
+		/* 864x645 is the size the site's clips are recorded at; the script sets the real ratio. */
+		max-width: calc(80vh * var(--clip-aspect, 1.34));
+		margin-inline: auto;
 	}
 	.demo-clip-player video {
 		display: block;
@@ -211,7 +223,9 @@ const posterName = poster ?? src.replace(/\.[^./]+$/, '.jpg');
 		font-variant-numeric: tabular-nums;
 	}
 	.demo-clip figcaption {
-		margin-top: 0.5rem;
+		max-width: 80%;
+		margin: 0.75rem auto 0;
+		text-wrap: balance;
 		font-size: var(--sl-text-sm);
 		color: var(--sl-color-gray-3);
 		text-align: center;

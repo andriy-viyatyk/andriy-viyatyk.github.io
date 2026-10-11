@@ -3,7 +3,7 @@
  * Persephone's browser reads it at pages["<id>"].editor.app instead of parsing the page snapshot.
  * Outside Persephone nothing reads it.
  *
- * The model is read-only apart from navigation and the colour theme: it describes the current page,
+ * The model is read-only apart from navigation: it describes the current page,
  * lists every page and catalog board (from /ai-vision/site-index.json), searches the site with
  * Pagefind, and points at the main controls on screen.
  */
@@ -12,11 +12,8 @@ import { createElements, highlightElement } from 'ai-vision/dom';
 import { expose } from 'ai-vision/remote';
 import type { SiteIndex } from '../pages/ai-vision/site-index.json';
 
-type Theme = 'auto' | 'dark' | 'light';
 type PageEntry = SiteIndex['pages'][number];
 type BoardEntry = SiteIndex['boards'][number];
-
-const THEMES: Theme[] = ['auto', 'dark', 'light'];
 
 const content = () => document.querySelector<HTMLElement>('main .sl-markdown-content');
 const headingElements = () => [...(content()?.querySelectorAll<HTMLElement>('h2[id], h3[id]') ?? [])];
@@ -54,21 +51,6 @@ function clipList() {
 	return [...document.querySelectorAll<HTMLElement>('.demo-clip')].map((figure) => {
 		const media = figure.querySelector<HTMLImageElement | HTMLVideoElement>('img, video');
 		return { src: media?.getAttribute('src') ?? '', caption: figure.querySelector('figcaption')?.textContent?.trim() ?? '' };
-	});
-}
-
-function currentTheme(): Theme {
-	const select = document.querySelector<HTMLSelectElement>('starlight-theme-select select');
-	return THEMES.includes(select?.value as Theme) ? (select!.value as Theme) : 'auto';
-}
-
-function setTheme(value: unknown) {
-	const theme = String(value) as Theme;
-	if (!THEMES.includes(theme)) throw new Error(`Unknown theme "${String(value)}". Use one of: ${THEMES.join(', ')}.`);
-	// Go through the picker so Starlight stores the choice and updates every picker on the page.
-	document.querySelectorAll<HTMLSelectElement>('starlight-theme-select select').forEach((select) => {
-		select.value = theme;
-		select.dispatchEvent(new Event('change'));
 	});
 }
 
@@ -116,7 +98,6 @@ function open(path: unknown) {
 
 const elementDeclarations = [
 	{ name: 'search', selector: 'site-search button[data-open-modal]', purpose: 'Opens the site search dialog.', where: 'Header, in the middle (a magnifier icon on narrow screens).' },
-	{ name: 'theme', selector: 'starlight-theme-select select', purpose: 'The colour theme picker: Dark, Light or Auto.', where: 'Header, right side.' },
 	{ name: 'github', selector: '.social-icons a[href*="github.com"]', purpose: 'Link to the author’s GitHub profile.', where: 'Header, right side.' },
 	{ name: 'sidebar', selector: 'nav.sidebar', purpose: 'Site navigation: Persephone, ai-vision and av-grid.', where: 'Left column (behind the menu button on narrow screens).' },
 	{ name: 'toc', selector: 'starlight-toc', purpose: 'The “On this page” list of the current page’s sections.', where: 'Right column, on wide screens only.' },
@@ -233,28 +214,25 @@ function buildModel(index: SiteIndex) {
 				+ 'page describes only the page open in this tab. open() and pages[i].open() reload the tab, so read pages["<id>"].editor.app again afterwards. '
 				+ 'search() uses the site’s Pagefind index and returns the best pages with an excerpt. '
 				+ 'boards lists the published Persephone boards; installing one is done in Persephone (an agent can use its boards API), not here. '
-				+ 'theme switches the colour theme and is remembered by this browser. highlight(name, message) points the user at a control on screen.',
+				+ 'highlight(name, message) points the user at a control on screen.',
 			members: [
 				{ name: 'page', kind: 'property', node: true, summary: 'The page open in this tab: title, sections, clips, text.' },
 				{ name: 'pages', kind: 'property', node: true, indexable: true, summary: 'Every page on the site with its path.' },
 				{ name: 'boards', kind: 'property', node: true, indexable: true, summary: 'The Persephone board catalog.' },
 				{ name: 'search', kind: 'method', signature: 'search(query: string, limit?: number)', summary: 'Full-text search over the site; returns { title, path, excerpt, sections } for the best matches (5 by default, at most 20).' },
 				{ name: 'open', kind: 'method', signature: 'open(path: string)', summary: 'Navigate this tab to a site path, such as "/persephone/workspace/" (a "#section" suffix is kept).' },
-				{ name: 'theme', kind: 'property', writable: true, summary: 'Colour theme: "auto", "dark" or "light". Setting it is remembered by this browser.' },
 				{ name: 'helpSearch', kind: 'method', signature: 'helpSearch(query: string, limit?: number)', summary: 'Find a member or on-screen control of this model by purpose.' },
 				...elements.members,
 			],
 			elements: elementDeclarations,
 			provide: elements.provide,
-			summarize: () => ({ kind: 'Site', page: page.title, path: location.pathname, pages: index.pages.length, boards: index.boards.length, theme: currentTheme() }),
+			summarize: () => ({ kind: 'Site', page: page.title, path: location.pathname, pages: index.pages.length, boards: index.boards.length }),
 		},
 		get page() { return page; },
 		get pages() { return pagesNode; },
 		get boards() { return boardsNode; },
 		search,
 		open,
-		get theme() { return currentTheme(); },
-		set theme(value: unknown) { setTheme(value); },
 		helpSearch: (query: unknown, limit: unknown) => helpSearch(root, String(query ?? ''), typeof limit === 'number' ? limit : undefined),
 	};
 	return root;
