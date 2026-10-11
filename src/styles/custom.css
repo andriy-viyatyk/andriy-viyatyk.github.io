@@ -2,6 +2,115 @@
 	--sl-content-width: 50rem;
 }
 
+/* Colors from Persephone's default themes, "Persephone" (dark) and "Persephone Light", in
+   persephone/src/renderer/theme/themes/. Starlight builds every surface, control, link and aside
+   from these variables:
+   - the page is the editor ground (bg-default); the header and sidebar are the darker app chrome
+     (bg-dark); inline code, raised surfaces and hairlines use bg-light and the theme's border;
+   - the gray scale runs from the theme's bright text down to its darkest background;
+   - the accent is Persephone's green ("AI agents"). Starlight fills highlights (the current sidebar
+     item, primary buttons, the selected search result) with text-accent and writes text-invert on
+     them: dark text on the bright green in dark mode, white on the deeper green in light mode.
+     Links in page text keep the theme's link blue;
+   - green, orange, red and blue (asides and badges) are the theme's success, warning, error and link
+     colors, each with a low tint mixed 18% into the page background. */
+:root,
+::backdrop {
+	--sl-color-white: #f0f3f4;
+	--sl-color-gray-1: #e8edef;
+	--sl-color-gray-2: #dfe6e9;
+	--sl-color-gray-3: #9fb0bf;
+	--sl-color-gray-4: #687c8e;
+	--sl-color-gray-5: #2c3e50;
+	--sl-color-gray-6: #22313f;
+	--sl-color-black: #151f29;
+
+	--sl-color-accent-low: #1e4640;
+	--sl-color-accent: #1e8449;
+	--sl-color-accent-high: #2ecc71;
+
+	--sl-color-green-low: #2e4a4a;
+	--sl-color-green: #82e0aa;
+	--sl-color-green-high: #82e0aa;
+	--sl-color-orange-low: #42452e;
+	--sl-color-orange: #f1c40f;
+	--sl-color-orange-high: #f1c40f;
+	--sl-color-red-low: #42363d;
+	--sl-color-red: #f1735f;
+	--sl-color-red-high: #f1735f;
+	--sl-color-blue-low: #274154;
+	--sl-color-blue: #5dade2;
+	--sl-color-blue-high: #5dade2;
+
+	--sl-color-text: var(--sl-color-gray-2);
+	--sl-color-text-accent: var(--sl-color-accent-high);
+	--sl-color-text-invert: #151f29;
+	--sl-color-bg: #1b2935;
+	--sl-color-bg-nav: #151f29;
+	--sl-color-bg-sidebar: #151f29;
+	--sl-color-bg-inline-code: #22313f;
+	--sl-color-bg-accent: var(--sl-color-accent);
+	--sl-color-hairline-light: #2c3e50;
+	--sl-color-hairline: #22313f;
+	--sl-color-hairline-shade: #151f29;
+	--sl-color-backdrop-overlay: rgb(21 31 41 / 0.7);
+
+	--site-color-link: #5dade2;
+}
+
+:root[data-theme='light'],
+[data-theme='light'] ::backdrop {
+	--sl-color-white: #151f29;
+	--sl-color-gray-1: #1b2935;
+	--sl-color-gray-2: #2c3e50;
+	--sl-color-gray-3: #5d6d7e;
+	--sl-color-gray-4: #8a9aa8;
+	--sl-color-gray-5: #d0d9e0;
+	--sl-color-gray-6: #e3e9ed;
+	--sl-color-gray-7: #ecf0f1;
+	--sl-color-black: #fbfcfd;
+
+	--sl-color-accent-low: #d3e6dd;
+	--sl-color-accent: #1e8449;
+	--sl-color-accent-high: #145a32;
+
+	--sl-color-green-low: #dce5d2;
+	--sl-color-green: #4d7c0f;
+	--sl-color-green-high: #4d7c0f;
+	--sl-color-orange-low: #eae1cf;
+	--sl-color-orange: #9a6700;
+	--sl-color-orange-high: #9a6700;
+	--sl-color-red-low: #f0d9d7;
+	--sl-color-red: #c0392b;
+	--sl-color-red-high: #c0392b;
+	--sl-color-blue-low: #d3e3ee;
+	--sl-color-blue: #1f6fa8;
+	--sl-color-blue-high: #1f6fa8;
+
+	--sl-color-text-accent: var(--sl-color-accent);
+	--sl-color-text-invert: #ffffff;
+	--sl-color-bg: #fbfcfd;
+	--sl-color-bg-nav: #ecf0f1;
+	--sl-color-bg-sidebar: #ecf0f1;
+	--sl-color-bg-inline-code: #e3e9ed;
+	--sl-color-bg-accent: var(--sl-color-accent);
+	--sl-color-hairline-light: #d0d9e0;
+	--sl-color-hairline: #d0d9e0;
+	--sl-color-hairline-shade: #d0d9e0;
+	--sl-color-backdrop-overlay: rgb(44 62 80 / 0.45);
+
+	--site-color-link: #1f6fa8;
+}
+
+/* Links in page text use the theme's link blue; the accent green stays for navigation. */
+.sl-markdown-content a:not(:where(.not-content *)) {
+	color: var(--site-color-link);
+}
+
+.sl-markdown-content a:hover:not(:where(.not-content *)) {
+	color: var(--sl-color-white);
+}
+
 /* Wide screens: the "On this page" panel sits at the right edge of the window, and the page text
    is centered in the space between the two panels. */
 @media (min-width: 72rem) {
@@ -27,4 +136,12 @@ html[data-has-hero] {
 
 .hero .tagline {
 	max-width: 65ch;
+}
+
+/* Header: Starlight lines the search box up with the content column, which the overrides above move,
+   so it floats unaligned. Push it to the right, next to the GitHub and theme controls. */
+@media (min-width: 50rem) {
+	.header > div:nth-child(2) {
+		justify-content: flex-end;
+	}
 }
