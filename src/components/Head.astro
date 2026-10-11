@@ -2,12 +2,15 @@
 /**
  * Starlight's Head plus the site's ai-vision model (src/scripts/site-model.ts), so every page
  * publishes window.__aiVision for an agent driving Persephone's browser. Also opens links that
- * leave the site in a new tab (src/scripts/external-links.ts).
+ * leave the site in a new tab (src/scripts/external-links.ts), and counts the visit with
+ * GoatCounter (cookieless; stats at andriy-viyatyk.goatcounter.com, localhost is not counted).
  */
 import Default from '@astrojs/starlight/components/Head.astro';
 ---
 
 <Default />
+
+<script is:inline data-goatcounter="https://andriy-viyatyk.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
 <script>
 	import '../scripts/site-model';
