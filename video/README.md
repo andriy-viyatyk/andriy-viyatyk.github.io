@@ -18,14 +18,15 @@ repeats with no player; `DemoClip` renders a `.gif` as an image. The MP4 and its
 | `av-grid-demo.mp4` | `AvGrid` | [src/av-grid/AvGrid.tsx](src/av-grid/AvGrid.tsx) | `/grid/` ([page](../src/content/docs/grid/index.mdx)) | `npm run render:av-grid` |
 | `persephone-home.mp4` | `HomeLoop` | [src/persephone/HomeLoop.tsx](src/persephone/HomeLoop.tsx) | `/` ([page](../src/content/docs/index.mdx)) | `npm run render:home` |
 | `persephone-torrent-demo.mp4` | — (a real screen recording) | [fixtures/torrent-demo/scenes.js](fixtures/torrent-demo/scenes.js) | `/boards/torrent-viewer/` ([template](../src/pages/boards/%5Bid%5D.astro)) | recorded in Persephone, see its recipe |
+| `persephone-theme-editor-demo.mp4` | — (a real screen recording) | [fixtures/theme-editor-demo/](fixtures/theme-editor-demo) `te-*.js` | `/boards/theme-editor/` ([template](../src/pages/boards/%5Bid%5D.astro)) | recorded in Persephone, see its recipe |
 | `persephone-workspace-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `workspace-*.js` | `/persephone/workspace/` ([page](../src/content/docs/persephone/workspace/index.mdx)) | recorded in Persephone, see its recipe |
 | `persephone-install-board-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `install-board-*.js` | `/persephone/boards/installing/` ([page](../src/content/docs/persephone/boards/installing.mdx)) | recorded in Persephone, see its recipe |
 | `persephone-mneme-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `mneme-*.js` | `/persephone/mneme/` ([page](../src/content/docs/persephone/mneme/index.mdx)) | recorded in Persephone, see its recipe |
 | `ai-vision-mcp-scale.mp4` | `McpScale` | [src/ai-vision/McpScale.tsx](src/ai-vision/McpScale.tsx) | `/ai-vision/mcp-at-scale/` ([page](../src/content/docs/ai-vision/mcp-at-scale.mdx)) | `npm run render:mcp-scale` |
 | `persephone-site-extensions.mp4` | `SiteExtensions` | [src/persephone/SiteExtensions.tsx](src/persephone/SiteExtensions.tsx) | `/persephone/site-extensions/` ([page](../src/content/docs/persephone/site-extensions/index.mdx)) | `npm run render:site-extensions` |
 
-Four videos are the exception: `persephone-torrent-demo.mp4`, `persephone-workspace-demo.mp4`,
-`persephone-install-board-demo.mp4` and `persephone-mneme-demo.mp4` are **real screen recordings** made by Persephone's own recorder
+Five videos are the exception: `persephone-torrent-demo.mp4`, `persephone-theme-editor-demo.mp4`,
+`persephone-workspace-demo.mp4`, `persephone-install-board-demo.mp4` and `persephone-mneme-demo.mp4` are **real screen recordings** made by Persephone's own recorder
 (`window.screen.recording`), with a scripted cursor and tooltips drawn on top. Use that method when
 the point is live behavior (streaming, loading, a real install flow) that screenshots can't show;
 their recipes are at the end. The feature recordings run against the **demo data** profile (below),
@@ -500,6 +501,44 @@ The agent's MCP connection does not come back after Persephone restarts mid-sess
 (Board Info, the trust dialog, Tools & Editors). [fixtures/feature-demos/helpers.js](fixtures/feature-demos/helpers.js)
 installs a MutationObserver that shows the user-name segment as `demo` in every text node and
 `title` before the frame paints. Check the frames for any other path before publishing.
+
+## Recipe: Theme Editor (screen recording, 59 s)
+
+**What it shows**: Settings → Theme (the built-in themes) → **Create a new theme** opens the Theme
+Editor board (the `theme.edit` capability, `mode: "new"`) → the **Generated Set** of 100 variants →
+a tile previews the whole app live (a light tile, then a dark blue one) → the **Contrast** list →
+**Generator**: the Background hue slider shifts the app → **Save as** "Deep Ocean" → the new tile
+under Custom in Settings. Shown on `/boards/theme-editor/` through the `demoClips` map in
+[src/pages/boards/[id].astro](../src/pages/boards/%5Bid%5D.astro), like Torrent Viewer.
+
+**How it is made**: the same overlay method as Torrent Viewer, in the demo profile.
+
+0. **Board**: on a fresh demo profile, `boards.downloadPublished("theme-editor")`, then
+   `boards.registerBoard(root)` → Trust Board.
+1. **Window 1120x760**, not 864x645: at 864 the board's Generated Set heading wraps and the tiles
+   drop to three columns. The GIF is rendered at 1120.
+2. **Board CSS patch (temporary)**: the board's Both/Dark/Light switch shrinks and clips at any
+   width (a board bug, board 1.2.0). For the take, add `.set-mode { flex: none; }` to the
+   **installed** copy's `styles.css` (`%APPDATA%\persephone\data\boards\theme-editor`, demo
+   profile), back up the original first, and restore it afterwards. The repo is not changed.
+3. **Clean state**: only a Settings tab, scrolled to the top, the `persephone` theme active, no
+   custom theme. Reset between takes: `app.themes.delete("custom-deep-ocean")`,
+   `app.settings.set("theme", "persephone")`, close the Theme Editor tab (answer Unsaved Changes
+   with Don't Save when the draft was not saved).
+4. **Record**: in the capture window run `scripts/demo-overlay.js`,
+   `fixtures/feature-demos/helpers.js` and [te-0-setup.js](fixtures/theme-editor-demo/te-0-setup.js),
+   set `window.__TAKE = true`, then run `te-1.js`, `te-2.js` and `te-3.js` back to back (each one
+   `windows[N].script.execute`, from one Node process so the gaps stay short). `te-3.js` outlives
+   the MCP call: read the recording path with `windows[N].script.result(runId)`. Without
+   `__TAKE` the same files make a dry run.
+5. **Random set**: the 100 variants differ every run, so the scenes pick tiles by color
+   (`__te.pickTile(score)`): the most saturated light tile, then the most saturated dark blue one.
+6. **Finish**: copy the recording to `out/`, cut the first 2 s (`-ss 2`, libx264), then
+   `node scripts/finish.mjs persephone-theme-editor-demo 30` and
+   `node scripts/gif.mjs persephone-theme-editor-demo 1120 10` (~11 MB). Delete the temp file from
+   the profile's `recordings` folder.
+7. **Clean up**: delete the saved theme, restore the default theme and the board's `styles.css`,
+   close the capture window.
 
 ## Recipe: Workspace (screen recording, 65 s)
 
