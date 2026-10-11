@@ -7,5 +7,5 @@ const ws = app.pages.all.at(-1);
 for (const p of [...app.pages.all]) if (p.id !== ws.id) await app.pages.closePage(p.id);
 await sleep(500);
 await __ws.click(__ws.chevron('docs'), { ms: 300 });
-await __demo.move(900, 600, 300);
+await __demo.move(600, 400, 300);
 return app.pages.all.map((p) => p.title);

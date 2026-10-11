@@ -114,24 +114,34 @@ const RichScene = ({ duration }: { duration: number }) => (
 					src: 'g-grid.png',
 					at: 0,
 					marks: [
-						{ at: 90, until: 190, x: 354, y: 117, w: 296, h: 240 },
-						{ at: 90, until: 190, x: 1005, y: 117, w: 165, h: 240 },
-						{ at: 200, until: 300, x: 650, y: 58, w: 355, h: 58 },
-						{ at: 310, until: duration, x: 0, y: 926, w: 1282, h: 26 },
-						{ at: 310, until: duration, x: 0, y: 58, w: 143, h: 868 },
-						{ at: 310, until: duration, x: 1168, y: 58, w: 114, h: 868 },
+						{ at: 90, until: 150, x: 531, y: 174, w: 143, h: 315 },
+						{ at: 90, until: 150, x: 795, y: 174, w: 180, h: 315 },
+					],
+				},
+				{
+					// The same rows scrolled across, so the quarter columns and Growth/Target are in view.
+					src: 'g-scrolled.png',
+					at: 145,
+					marks: [
+						{ at: 160, until: 192, x: 930, y: 174, w: 180, h: 315 },
+						{ at: 200, until: 300, x: 396, y: 84, w: 534, h: 48 },
+						{ at: 310, until: duration, x: 0, y: 900, w: 1275, h: 45 },
+						{ at: 310, until: duration, x: 0, y: 87, w: 215, h: 813 },
+						{ at: 310, until: duration, x: 1110, y: 87, w: 165, h: 813 },
 					],
 				},
 			]}
 			keys={[
 				{ at: 0, ...FULL, scale: 0.98 },
 				{ at: 60, ...FULL, scale: 0.98 },
-				{ at: 90, x: 760, y: 250, scale: 1.55 },
-				{ at: 190, x: 760, y: 250, scale: 1.55 },
-				{ at: 210, x: 830, y: 200, scale: 1.7 },
-				{ at: 300, x: 830, y: 200, scale: 1.7 },
-				{ at: 320, x: 648, y: 430, scale: 0.85 },
-				{ at: duration, x: 648, y: 430, scale: 0.85 },
+				{ at: 90, x: 760, y: 330, scale: 1.15 },
+				{ at: 145, x: 760, y: 330, scale: 1.15 },
+				{ at: 160, x: 820, y: 330, scale: 1.15 },
+				{ at: 190, x: 820, y: 330, scale: 1.15 },
+				{ at: 210, x: 660, y: 250, scale: 1.2 },
+				{ at: 300, x: 660, y: 250, scale: 1.2 },
+				{ at: 320, x: 648, y: 470, scale: 0.92 },
+				{ at: duration, x: 648, y: 470, scale: 0.92 },
 			]}
 		/>
 		<Caption top at={8} until={305}>
@@ -162,15 +172,15 @@ const ScrollScene = ({ duration }: { duration: number }) => (
 					src: 'g-scroll.png',
 					at: 30,
 					marks: [
-						{ at: 60, x: 0, y: 117, w: 143, h: 809 },
-						{ at: 60, x: 1168, y: 117, w: 114, h: 809 },
+						{ at: 60, x: 0, y: 174, w: 215, h: 726 },
+						{ at: 60, x: 1110, y: 174, w: 165, h: 726 },
 					],
 				},
 			]}
 			keys={[
 				{ at: 0, ...FULL, scale: 0.98 },
-				{ at: 80, x: 648, y: 490, scale: 0.8 },
-				{ at: duration, x: 648, y: 490, scale: 0.8 },
+				{ at: 80, x: 648, y: 510, scale: 0.85 },
+				{ at: duration, x: 648, y: 510, scale: 0.85 },
 			]}
 		/>
 		<Caption top at={34} until={duration}>
@@ -202,16 +212,16 @@ const RangeScene = ({ duration }: { duration: number }) => (
 	<Scene duration={duration}>
 		<ShotSequence
 			shots={[
-				{ src: 'g-grid.png', at: 0 },
+				{ src: 'g-scrolled.png', at: 0 },
 				{ src: 'g-range-a.png', at: 40 },
 				{ src: 'g-range.png', at: 75 },
 				{ src: 'g-menu.png', at: 160 },
-				{ src: 'g-menu2.png', at: 210, marks: [{ at: 225, until: duration, x: 925, y: 376, w: 206, h: 83 }] },
+				{ src: 'g-menu2.png', at: 210, marks: [{ at: 225, until: duration, x: 940, y: 511, w: 312, h: 133 }] },
 			]}
 			keys={[
 				{ at: 0, ...FULL, scale: 0.98 },
-				{ at: 35, x: 840, y: 330, scale: 1.6 },
-				{ at: duration, x: 860, y: 340, scale: 1.65 },
+				{ at: 35, x: 680, y: 460, scale: 1.15 },
+				{ at: duration, x: 700, y: 470, scale: 1.2 },
 			]}
 		/>
 		<Caption top at={8} until={150}>
@@ -241,7 +251,7 @@ const Clipboard = ({ at }: { at: number }) => (
 				}}
 			>
 				<div style={{ fontFamily: sans, fontSize: 22, color: palette.muted, marginBottom: 8 }}>copied from a spreadsheet</div>
-				{[['36', '8388'], ['52', '7644'], ['470', '83190'], ['455', '85085'], ['392', '36064']].map(([u, r]) => (
+				{[['262', '12310'], ['29', '2262'], ['410', '28290'], ['35', '8155'], ['41', '6027']].map(([u, r]) => (
 					<div key={u} style={{ display: 'flex' }}>
 						<span style={{ width: 90 }}>{u}</span>
 						<span style={{ color: palette.muted, width: 50 }}>⇥</span>
@@ -257,20 +267,20 @@ const PasteScene = ({ duration }: { duration: number }) => (
 	<Scene duration={duration}>
 		<ShotSequence
 			shots={[
-				{ src: 'g-paste-a.png', at: 0, marks: [{ at: 20, until: 100, x: 828, y: 476, w: 74, h: 30 }] },
+				{ src: 'g-paste-a.png', at: 0, marks: [{ at: 20, until: 100, x: 661, y: 577, w: 115, h: 49 }] },
 				{
 					src: 'g-paste.png',
 					at: 100,
 					marks: [
-						{ at: 115, x: 828, y: 476, w: 177, h: 150 },
-						{ at: 160, x: 1005, y: 476, w: 80, h: 150 },
-						{ at: 160, x: 1168, y: 476, w: 114, h: 150 },
+						{ at: 115, x: 661, y: 577, w: 270, h: 228 },
+						{ at: 160, x: 930, y: 577, w: 120, h: 228 },
+						{ at: 160, x: 1110, y: 577, w: 165, h: 228 },
 					],
 				},
 			]}
 			keys={[
-				{ at: 0, x: 800, y: 530, scale: 1.5 },
-				{ at: duration, x: 810, y: 540, scale: 1.55 },
+				{ at: 0, x: 670, y: 500, scale: 1.15 },
+				{ at: duration, x: 680, y: 505, scale: 1.18 },
 			]}
 		/>
 		<Clipboard at={20} />
@@ -286,10 +296,10 @@ const PasteScene = ({ duration }: { duration: number }) => (
 const EditScene = ({ duration }: { duration: number }) => (
 	<Scene duration={duration}>
 		<ShotSequence
-			shots={[{ src: 'g-dropdown.png', at: 0, marks: [{ at: 30, x: 530, y: 266, w: 160, h: 141 }] }]}
+			shots={[{ src: 'g-dropdown.png', at: 0, marks: [{ at: 30, x: 793, y: 397, w: 244, h: 214 }] }]}
 			keys={[
-				{ at: 0, x: 640, y: 330, scale: 1.4 },
-				{ at: duration, x: 620, y: 330, scale: 1.75 },
+				{ at: 0, x: 700, y: 470, scale: 1.12 },
+				{ at: duration, x: 740, y: 480, scale: 1.3 },
 			]}
 		/>
 		<Caption top at={8} until={duration}>
@@ -302,22 +312,22 @@ const FilterScene = ({ duration }: { duration: number }) => (
 	<Scene duration={duration}>
 		<ShotSequence
 			shots={[
-				{ src: 'g-filter-pop.png', at: 0, marks: [{ at: 20, until: 105, x: 422, y: 100, w: 260, h: 198 }] },
-				{ src: 'g-filter.png', at: 110, marks: [{ at: 125, until: 215, x: 8, y: 56, w: 328, h: 28 }] },
+				{ src: 'g-filter-pop.png', at: 0, marks: [{ at: 20, until: 105, x: 631, y: 145, w: 394, h: 304 }] },
+				{ src: 'g-filter.png', at: 110, marks: [{ at: 125, until: 215, x: 13, y: 85, w: 488, h: 40 }] },
 				{
 					src: 'g-search.png',
 					at: 220,
 					marks: [
-						{ at: 230, x: 1016, y: 10, w: 266, h: 36 },
-						{ at: 245, x: 0, y: 926, w: 1282, h: 26 },
+						{ at: 230, x: 877, y: 16, w: 397, h: 52 },
+						{ at: 245, x: 0, y: 900, w: 1275, h: 45 },
 					],
 				},
 			]}
 			keys={[
-				{ at: 0, x: 560, y: 260, scale: 1.6 },
-				{ at: 100, x: 560, y: 260, scale: 1.6 },
-				{ at: 125, x: 648, y: 430, scale: 0.85 },
-				{ at: duration, x: 648, y: 430, scale: 0.85 },
+				{ at: 0, x: 720, y: 360, scale: 1.2 },
+				{ at: 100, x: 720, y: 360, scale: 1.2 },
+				{ at: 125, x: 648, y: 420, scale: 0.95 },
+				{ at: duration, x: 648, y: 420, scale: 0.95 },
 			]}
 		/>
 		<Caption at={8} until={105}>
@@ -336,12 +346,12 @@ const ThemeScene = ({ duration }: { duration: number }) => (
 	<Scene duration={duration}>
 		<ShotSequence
 			shots={[
-				{ src: 'g-grid.png', at: 0 },
+				{ src: 'g-scrolled.png', at: 0 },
 				{ src: 'g-dark.png', at: 30 },
 			]}
 			keys={[
-				{ at: 0, x: 648, y: 430, scale: 0.85 },
-				{ at: duration, x: 648, y: 430, scale: 0.85 },
+				{ at: 0, x: 648, y: 420, scale: 0.95 },
+				{ at: duration, x: 648, y: 420, scale: 0.95 },
 			]}
 		/>
 		<Caption top at={20} until={duration}>

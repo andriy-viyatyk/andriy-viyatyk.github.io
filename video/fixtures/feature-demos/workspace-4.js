@@ -9,7 +9,7 @@ __demo.hide();
 await sleep(300);
 await __ws.click(byText(vis('[data-name="boards-secondary-view"]'), 'Station Dashboard'));
 await sleep(2500);
-await __demo.move(900, 700, 1000);
+await __demo.move(600, 470, 1000);
 await sleep(3000);
 if (window.__REC) {
 	const result = await app.window.screen.recording.stop();

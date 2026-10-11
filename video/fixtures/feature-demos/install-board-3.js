@@ -9,7 +9,7 @@ await __demo.move(s.x + s.w * 0.6, s.y + s.h * 0.7, 800);
 __demo.show(s, '.docx now opens in Word Viewer', 'Installed boards sit next to the built-in editors for their file types', 'below', 5);
 await sleep(4200);
 __demo.hide();
-await __demo.move(800, 500, 900);
+await __demo.move(540, 340, 900);
 await sleep(1500);
 await __ws.click(document.querySelector('[data-name="persephone-menu"]'), { ms: 1000 });
 await sleep(500);

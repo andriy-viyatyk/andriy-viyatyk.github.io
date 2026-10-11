@@ -81,14 +81,14 @@ while (Date.now() - t0 < 15000) {
 	if (v && !v.paused && v.currentTime > 0.3) break;
 	await sleep(200);
 }
-await __demo.move(1000, 600, 900);
+await __demo.move(660, 400, 900);
 await sleep(4500);
 const s = __demo.appRect('[data-name="page-pipe-status"]');
 await __demo.move(s.x - 26, s.y + 4, 1000);
 __demo.show(s, 'Streams while it downloads', 'Peers and download speed, live in the status bar', 'above', 3);
 await sleep(4500);
 __demo.hide();
-await __demo.move(1000, 600, 900);
+await __demo.move(660, 400, 900);
 await sleep(3500);
 const result = await app.window.screen.recording.stop(); // { path, durationMs, width, height, ... }
 window.__demoObs?.disconnect();

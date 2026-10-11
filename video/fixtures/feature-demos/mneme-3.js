@@ -23,7 +23,7 @@ await sleep(4800);
 __demo.hide();
 await __ws.click(hit, { dx: 50 });
 await sleep(2500);
-await __demo.move(900, 700, 1000);
+await __demo.move(600, 470, 1000);
 await sleep(2500);
 // Run with `--wait __m3done`; the recording's temp path ends up in window.__m3result.
 if (window.__REC) {

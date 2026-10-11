@@ -234,17 +234,17 @@ const BoardScene = ({ duration }: { duration: number }) => (
 			shots={[
 				{ src: 'win-1-before.png', at: 0 },
 				{ src: 'win-2-highlight.png', at: 228 },
-				{ src: 'win-3-after.png', at: 342, marks: [{ at: 365, x: 360, y: 318, w: 900, h: 52 }] },
+				{ src: 'win-3-after.png', at: 342, marks: [{ at: 365, x: 504, y: 472, w: 732, h: 54 }] },
 			]}
 			keys={[
 				{ at: 0, ...FULL, scale: 0.98 },
 				{ at: 50, ...FULL, scale: 0.98 },
-				{ at: 80, x: 648, y: 430, scale: 1.1 },
-				{ at: 210, x: 648, y: 430, scale: 1.1 },
-				{ at: 240, x: 560, y: 330, scale: 1.4 },
-				{ at: 330, x: 560, y: 330, scale: 1.4 },
-				{ at: 352, x: 640, y: 420, scale: 1.3 },
-				{ at: duration, x: 640, y: 420, scale: 1.34 },
+				{ at: 80, x: 648, y: 520, scale: 1.0 },
+				{ at: 210, x: 648, y: 520, scale: 1.0 },
+				{ at: 240, x: 780, y: 330, scale: 1.18 },
+				{ at: 330, x: 780, y: 330, scale: 1.18 },
+				{ at: 352, x: 760, y: 520, scale: 1.08 },
+				{ at: duration, x: 760, y: 520, scale: 1.12 },
 			]}
 		/>
 		<BottomRight>
@@ -312,10 +312,10 @@ const WebScene = ({ duration }: { duration: number }) => (
 			keys={[
 				{ at: 0, ...FULL, scale: 0.98 },
 				{ at: 50, ...FULL, scale: 0.98 },
-				{ at: 80, x: 648, y: 520, scale: 1.1 },
-				{ at: 226, x: 648, y: 520, scale: 1.1 },
-				{ at: 246, x: 648, y: 540, scale: 1.12 },
-				{ at: duration, x: 648, y: 540, scale: 1.16 },
+				{ at: 80, x: 680, y: 560, scale: 1.0 },
+				{ at: 226, x: 680, y: 560, scale: 1.0 },
+				{ at: 246, x: 680, y: 600, scale: 1.04 },
+				{ at: duration, x: 680, y: 600, scale: 1.08 },
 			]}
 		/>
 		<BottomRight>

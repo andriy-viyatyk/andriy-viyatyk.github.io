@@ -93,8 +93,19 @@ video is captured from an **864x645** window (two-thirds of 1296x968):
   0.86x on the site.
 - If a screen is too cramped at 864x645, 960x717 is the fallback (about 0.69x).
 
-Videos published before this rule (all of them, as of 2026-10-10) were captured at 1296x968 and
-still need re-recording at the new size.
+Every video was re-recorded at this size on 2026-10-11, in the new default `persephone` theme
+(the demo profile has no `theme` key, so it follows the default). Notes that follow from the
+smaller window:
+
+- **Explorer width 240**: workspace tabs in the Platform/HomeLoop shots set
+  `pages[id].panels.width = 240` (per page) so the editor keeps ~620 px. The screen recordings use
+  the profile default (320).
+- **GIF width**: render a screen recording's GIF at its own width, `gif.mjs <name> 864 12`
+  (`864 10` for the busy torrent clip), not 960, which only upscales.
+- **Incognito pages block window screenshots** (`window.screen.*` refuses while the active page is
+  private), so capture web pages in a normal browser tab of the demo profile.
+- **Fixed cursor points** in the scene files (`__demo.move(x, y)`) were scaled to the 864x645
+  window; a point past 864x645 parks the overlay cursor off screen.
 
 ## Capturing screenshots from Persephone
 
@@ -138,16 +149,21 @@ architecture (one resolver on the host; boards and web pages send only their mod
 1. Copy [fixtures/ai-vision/launch.todo.json](fixtures/ai-vision/launch.todo.json) to a scratch
    folder. It is the state *before* the shoot: list "Site launch", tags `docs` (dodgerblue) and
    `video` (hotpink), four items. Open it in the clean window: `call("windows[N].pages.openFile", [path])`.
-   It opens in the todo board.
+   Todo is a **catalog board** now, not built in: on a fresh profile install it once
+   (`boards.installPublished("todo")` opens the Install editor page → Download → Register board →
+   Trust Board), then switch the page to it (`editorSwitches.switchTo("board-editor:…\todo")`).
+   Set `app.selectedList = "Site launch"`.
 2. `win-1-before`: take the screenshot as it is.
    `win-2-highlight`: call `windows[N].page.editor.app.highlight` with `["quick-add-input", "Type a title here and press Enter"]`.
    `win-3-after`: call `editor.reload()`, then `app.addItem("Make the ai-vision video", "Site launch")` and `app.setItemTag(<id>, "video")`.
 3. Web page: in a clone of `github.com/andriy-viyatyk/ai-vision` (here `C:\projects\ai-vision`),
    run `npx http-server -p 4319 -c-1 --silent .` in the background. Then open
-   `windows[N].pages.openUrlInBrowserTab("http://localhost:4319/examples/demo-page/index.html", {incognito: true})`.
+   `windows[N].pages.openUrlInBrowserTab("http://localhost:4319/examples/demo-page/index.html")`
+   (not incognito: see *Capture size*).
    The page calls `expose(model)`, so its model is at `pages[1].editor.app` (`DemoApp`).
    `web-1`: before. `web-2`: after `app.addItem("Explain how ai-vision works", "video")`.
-   Scroll with `editor.evaluate("window.scrollTo(0, 330)")` if the list is off screen.
+   Park the pointer with `editor.hover("h1")` **first**, then `editor.evaluate("window.scrollTo(0, 340)")`:
+   hovering scrolls its target into view.
 4. Terminal text in the scenes is real `call` output, shortened. If the API changed, run the same
    calls again and update the `Terminal` lines and the error scene.
 
@@ -243,8 +259,11 @@ addTask("Plan next sprint", "medium", "<today>")
 addTask("Clean up old branches", "low")
 ```
 
-That gives `todo-2.png`. For `todo-1.png` (no priorities), use the git history of `todo-1.png` or
-re-record the session.
+That gives `todo-2.png`. For `todo-1.png` (the first version, no priorities): seed the same five
+titles with no priority or due date (the order is then insertion order), toggle "Review pull
+requests", and hide the priority UI for the shot with a style injected through `editor.evaluate`:
+`#new-priority,#new-due,.prio,.due,.overdue-count{display:none!important}`. Remove the style, then
+`setPriority`/`setDue` the tasks into the `todo-2` state above.
 
 ## Recipe: Persephone platform (`Platform`, 95 s)
 
@@ -272,9 +291,9 @@ re-recording the session** (and `boards.unregisterBoard` it), or the CSV already
 2. `pages.openFile("C:\Demo\website")` (workspace tab), then
    `pages.navigatePageTo(id, "C:\Demo\website\README.md")` → `p-ws-website`;
    `…\data\products.json` → `p-json-text`; `page.editorSwitches.switchTo("grid-json")` → `p-json-grid`;
-   `…\site-map.excalidraw`, wait ~4 s → `p-excalidraw`. Excalidraw marks the file modified on load;
+   `…\site-map.excalidraw`, wait ~4 s, then zoom to fit (`page.editor.pressKey("Shift+1",
+   {target: "canvas.interactive"})`) → `p-excalidraw`. Excalidraw marks the file modified on load;
    when navigating away, answer the Unsaved Changes dialog with **Don't Save**.
-   The sketch's coordinates are tuned to sit below Excalidraw's toolbar at this window size.
 3. Navigate the website tab back to README; `pages.openFile("C:\Demo\home-budget")` and navigate
    it to `2026-09.budget.csv` → `p-ws-budget`; show the website tab → `p-ws-website2`.
 4. Show the budget tab and run the agent session (separate background agent):
@@ -299,6 +318,11 @@ re-recording the session** (and `boards.unregisterBoard` it), or the CSV already
    > `path → result`, under ~90 chars, including real errors).
 
 5. Screenshot → `p-budget-viewer`; navigate the tab to `2026-08.budget.csv` → `p-budget-aug`.
+   **Retaking only the screenshots**: the fixture board is already in place. `p-ws-budget` and
+   `p-ws-website2` need it *unregistered* (otherwise the CSV opens in Budget and the Explorer shows
+   its icon); then `boards.registerBoard` it (Trust Board) for the two Budget shots. Every tab needs
+   Explorer width 240. The fixture's breakpoint was lowered from 760 px to 460 px (2026-10-11) so
+   its cards stay side by side in the 624 px editor; that is the only change to the agent's board.
 6. Put the agent's REPLY/LOG into `ASK`, `BUILD_STEPS`, `REPLY` in `Platform.tsx` (shortened).
    Backslashes in those strings must be doubled (`\`), or JavaScript eats them (`\b` is a backspace).
 
@@ -334,15 +358,16 @@ editor with `app.pages.findPage(id).editor` (`pages` is not a script global) and
 | Shot | How |
 |---|---|
 | `g-grid` | fresh load |
+| `g-scrolled` | fresh load, the viewport's `scrollLeft = 386` (Status · Q1 · Q2 · Growth · Target next to SKU), hover `h1` |
 | `g-scroll` | `grid.scrollToRow(98990,"top")`, then the scroller's `scrollLeft = 10000` |
-| `g-range-a`, `g-range` | `ed.drag(row 3 q1Units → row 6 q1Revenue)`, then `→ row 9 q2Revenue` (real drag) |
+| `g-range-a`, `g-range` | `scrollLeft = 386`; `ed.drag(row 3 q1Units → row 6 q1Revenue)`, then `→ row 9 q2Revenue` (real drag) |
 | `g-menu`, `g-menu2` | `ed.click(cell, {button:"right"})`; `ed.hover('[data-id="avg-copy-as"]')` opens the submenu |
-| `g-paste-a`, `g-paste` | reload; click row 12 q2Units; `grid.pasteText("36\t8388\n52\t7644\n470\t83190\n455\t85085\n392\t36064")` |
+| `g-paste-a`, `g-paste` | `ed.reload()`; `scrollLeft = 386`; click row 9 q2Units; `grid.pasteText("262\t12310\n29\t2262\n410\t28290\n35\t8155\n41\t6027")` (the same values as the `Clipboard` overlay) |
 | `g-dropdown` | click row 5 status, `pressKey("Enter")` |
 | `g-filter-pop` | reload; `grid.showFilterPopover("category")` (do not await it), tick Gaming |
 | `g-filter` | Escape; `applyFilter` category `["Gaming"]`, region `["North","East"]`; `setSort({key:"total",direction:"desc"})` |
 | `g-search` | `ed.type("#search","pro")` |
-| `g-dark` | `?theme=dark`; `grid.setSelected(["2","4","5"])`; drag row 8 q1Units → row 13 q2Revenue; blur, then hover `h1` |
+| `g-dark` | `ed.navigateAndWait("…?theme=dark")`; `grid.setSelected(["2","4","5"])`; `scrollLeft = 386`; drag row 8 q1Units → row 13 q2Revenue; blur, then hover `h1` |
 
 The clipboard is never touched, so the user's OS clipboard stays as it was: paste goes through
 `pasteText`, and the menu is only opened, never clicked. The render uses `--crf 25`, not 20: the
@@ -368,7 +393,9 @@ camera keys.
   `pages.navigatePageTo(id, boardFolder)` opens the folder as text, so don't use it.
   `boards.registerBoard` shows a trust dialog the author has to click. A Demo board
   (`boards.createDemoBoard`) is next to it in the panel.
-- `h-browser.png`: a browser tab on `https://andriy-viyatyk.github.io/boards/`.
+- `h-browser.png`: a browser tab on `https://andriy-viyatyk.github.io/boards/`, scrolled
+  (`window.scrollTo(0, 1560)`) so two catalog cards show: at 864 px the cards are one column and
+  the top of the page is the chess hero.
 
 **Render**: `npm run render:home`. It makes the MP4 (crf 23, ~7 MB), the poster and
 `out/persephone-home.gif`, which comes from [scripts/gif.mjs](scripts/gif.mjs): a two-pass,
@@ -390,6 +417,8 @@ the recording. Persephone has no built-in agent pointer yet (a backlog item); un
 [scripts/demo-overlay.js](scripts/demo-overlay.js) is that pointer. Its header lists the API
 (`move`, `ripple`, `show`, `hide`, `appRect`, `toWindow`).
 
+0. **Board**: on a fresh demo profile install Torrent Viewer once (`boards.downloadPublished("torrent-viewer")`,
+   then `boards.registerBoard(root)` → Trust Board).
 1. **Fixture**: serve [fixtures/torrent-demo/](fixtures/torrent-demo/index.html) with
    `npx -y http-server video/fixtures/torrent-demo -p 4320 -c-1 --silent`. Serve it over http: a
    `file://` URL puts the author's user name in the address bar.
@@ -409,8 +438,11 @@ the recording. Persephone has no built-in agent pointer yet (a backlog item); un
 7. **Keep the file**: copy it to `out/persephone-torrent-demo.mp4` **before** opening it in a
    player. Closing a player tab deletes an unsaved recording from the temp folder. Then run
    `node scripts/finish.mjs persephone-torrent-demo 5` (faststart + poster at 5 s, the magnet
-   tooltip) and `node scripts/gif.mjs persephone-torrent-demo` (~12 MB), and delete the temp file.
-   **Trim the idle wait first**: between scene 1 and scene 2 the screen holds still for ~9 s (the
+   tooltip) and `node scripts/gif.mjs persephone-torrent-demo 864 10` (~11 MB), and delete the temp file.
+   **Check the idle wait first**: the 2026-10-11 take ran all three scenes in one
+   `scripts/scene.mjs out/tv/scene1.js out/tv/scene2.js out/tv/scene3.js` call (the blocks of
+   `scenes.js` split into files) and held still only ~2 s, so it needed no cut. An earlier take did:
+   between scene 1 and scene 2 the screen holds still for ~9 s (the
    MCP round trip plus scene 2's opening sleep) while the board only updates its speed and peer
    counts. The published take cuts 9.5–17.5 s, keeping ~1.5 s of the loaded board: re-encode
    `-to 9.5` and `-ss 17.5` with libx264 into two parts, join them with the concat demuxer
@@ -484,7 +516,7 @@ workspace tab → the Explorer (callout) → README preview, `src/sensors.ts`, `
    re-install overlay + helpers, and the take: the same four files with `--take`. Scene 4 stops the
    recording and returns the temp path.
 4. Copy to `out/persephone-workspace-demo.mp4`, `node scripts/finish.mjs persephone-workspace-demo 41`, then
-   `node scripts/gif.mjs persephone-workspace-demo 960 12` (~8 MB; a recording has little motion).
+   `node scripts/gif.mjs persephone-workspace-demo 864 12` (~7 MB; a recording has little motion).
 
 Gotchas: a folder row's **name** opens Folder View; its chevron (`__ws.chevron(name)`) expands it.
 A search jump in a short file lands the match under Monaco's sticky-scroll header (a Persephone
@@ -509,7 +541,7 @@ The `.docx` is a fixture built by hand (OOXML parts zipped with `/` entry names:
    `scene.mjs install-board-3.js` (stops the recording). Scene 2 clicks **Register board** without
    awaiting it: that click resolves only when the dialog it opens is answered.
 4. Copy to `out/persephone-install-board-demo.mp4`, `node scripts/finish.mjs persephone-install-board-demo 36`, then
-   `node scripts/gif.mjs persephone-install-board-demo 960 12` (~5.5 MB).
+   `node scripts/gif.mjs persephone-install-board-demo 864 12` (~5 MB).
    To retake, uninstall Word Viewer first.
 
 ## Recipe: Mneme (screen recording, 67 s)
@@ -534,7 +566,7 @@ rooftop note, which is the point of the clip.
    `scene.mjs mneme-3.js --wait __m3done`. Scene 3 stops the recording; the temp path is in
    `window.__m3result`.
 4. Copy to `out/persephone-mneme-demo.mp4`, `node scripts/finish.mjs persephone-mneme-demo 58`,
-   `node scripts/gif.mjs persephone-mneme-demo 960 12` (~5 MB).
+   `node scripts/gif.mjs persephone-mneme-demo 864 12` (~5.5 MB).
 
 Gotchas: the model download takes 15–40 s; scene 1 **pauses** the recording after showing the
 progress bar and scene 2 resumes it, so no cut is needed. Adding the root before the model reads

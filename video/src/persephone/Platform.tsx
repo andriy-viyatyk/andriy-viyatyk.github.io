@@ -101,8 +101,8 @@ const NotepadScene = ({ duration }: { duration: number }) => (
 			keys={[
 				{ at: 0, ...FULL, scale: 0.98 },
 				{ at: 40, ...FULL, scale: 0.98 },
-				{ at: 110, x: 330, y: 200, scale: 1.7 },
-				{ at: duration, x: 330, y: 200, scale: 1.75 },
+				{ at: 110, x: 480, y: 340, scale: 1.55 },
+				{ at: duration, x: 480, y: 340, scale: 1.6 },
 			]}
 		/>
 		<Caption at={10} until={duration}>
@@ -133,20 +133,20 @@ const EditorTag = ({ at, until, name, note }: { at: number; until?: number; name
 	</AbsoluteFill>
 );
 
-const SWITCH_README: Mark = { at: 40, until: 110, x: 1130, y: 46, w: 162, h: 27 };
+const SWITCH_README: Mark = { at: 40, until: 110, x: 1048, y: 66, w: 242, h: 40 };
 
 const EditorsScene = ({ duration }: { duration: number }) => (
 	<Scene duration={duration}>
 		<ShotSequence
 			shots={[
 				{ src: 'p-ws-website.png', at: 0, marks: [SWITCH_README] },
-				{ src: 'p-json-text.png', at: 120, marks: [{ at: 150, until: 240, x: 1100, y: 46, w: 192, h: 27 }] },
+				{ src: 'p-json-text.png', at: 120, marks: [{ at: 150, until: 240, x: 1001, y: 66, w: 289, h: 40 }] },
 				{ src: 'p-json-grid.png', at: 240 },
-				{ src: 'p-excalidraw.png', at: 360, marks: [{ at: 380, until: duration, x: 1110, y: 46, w: 184, h: 27 }] },
+				{ src: 'p-excalidraw.png', at: 360, marks: [{ at: 380, until: duration, x: 1015, y: 66, w: 275, h: 40 }] },
 			]}
 			keys={[
-				{ at: 0, x: 648, y: 424, scale: 0.92 },
-				{ at: duration, x: 648, y: 430, scale: 0.95 },
+				{ at: 0, x: 648, y: 424, scale: 0.95 },
+				{ at: duration, x: 648, y: 430, scale: 0.98 },
 			]}
 		/>
 		<Caption top at={6} until={duration}>
@@ -167,23 +167,23 @@ const WorkspacesScene = ({ duration }: { duration: number }) => (
 					src: 'p-ws-website2.png',
 					at: 0,
 					marks: [
-						{ at: 30, until: 140, x: 2, y: 78, w: 346, h: 22 },
-						{ at: 30, until: 140, x: 250, y: 12, w: 206, h: 32 },
+						{ at: 30, until: 140, x: 3, y: 114, w: 360, h: 34 },
+						{ at: 30, until: 140, x: 363, y: 17, w: 298, h: 50 },
 					],
 				},
 				{
 					src: 'p-ws-budget.png',
 					at: 150,
 					marks: [
-						{ at: 170, x: 2, y: 78, w: 346, h: 22 },
-						{ at: 170, x: 458, y: 12, w: 206, h: 32 },
+						{ at: 170, x: 3, y: 114, w: 360, h: 34 },
+						{ at: 170, x: 661, y: 17, w: 302, h: 50 },
 					],
 				},
 			]}
 			keys={[
 				{ at: 0, ...FULL, scale: 1.0 },
-				{ at: 50, x: 500, y: 330, scale: 1.45 },
-				{ at: duration, x: 500, y: 330, scale: 1.45 },
+				{ at: 50, x: 540, y: 400, scale: 1.35 },
+				{ at: duration, x: 540, y: 400, scale: 1.35 },
 			]}
 		/>
 		<Caption at={10} until={145}>
@@ -298,12 +298,12 @@ const ResultScene = ({ duration }: { duration: number }) => (
 		<ShotSequence
 			shots={[
 				{ src: 'p-ws-budget.png', at: 0 },
-				{ src: 'p-budget-viewer.png', at: 40, marks: [{ at: 80, until: 220, x: 1054, y: 46, w: 240, h: 27 }] },
-				{ src: 'p-budget-aug.png', at: 230, marks: [{ at: 250, until: 340, x: 2, y: 121, w: 346, h: 44 }] },
+				{ src: 'p-budget-viewer.png', at: 40, marks: [{ at: 80, until: 220, x: 933, y: 66, w: 359, h: 40 }] },
+				{ src: 'p-budget-aug.png', at: 230, marks: [{ at: 250, until: 340, x: 3, y: 180, w: 360, h: 68 }] },
 			]}
 			keys={[
-				{ at: 0, x: 648, y: 424, scale: 0.92 },
-				{ at: duration, x: 648, y: 430, scale: 0.95 },
+				{ at: 0, x: 648, y: 424, scale: 0.95 },
+				{ at: duration, x: 648, y: 430, scale: 0.98 },
 			]}
 		/>
 		<AbsoluteFill style={{ justifyContent: 'flex-end', padding: '0 80px 50px' }}>

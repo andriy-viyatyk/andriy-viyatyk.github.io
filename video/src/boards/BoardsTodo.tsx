@@ -170,7 +170,7 @@ const BuildScene = ({ duration }: { duration: number }) => (
 	</Scene>
 );
 
-const SHOT_LIST = { x: 648, y: 360, scale: 1.5 };
+const SHOT_LIST = { x: 648, y: 430, scale: 1.25 };
 
 const ResultScene = ({ duration }: { duration: number }) => (
 	<Scene duration={duration}>
@@ -180,8 +180,8 @@ const ResultScene = ({ duration }: { duration: number }) => (
 					src: 'todo-1.png',
 					at: 0,
 					marks: [
-						{ at: 70, x: 298, y: 160, w: 172, h: 26 },
-						{ at: 100, x: 304, y: 243, w: 688, h: 34 },
+						{ at: 70, x: 118, y: 236, w: 260, h: 36 },
+						{ at: 100, x: 128, y: 362, w: 1036, h: 54 },
 					],
 				},
 			]}
@@ -189,7 +189,7 @@ const ResultScene = ({ duration }: { duration: number }) => (
 				{ at: 0, x: 648, y: 484, scale: 0.98 },
 				{ at: 30, x: 648, y: 484, scale: 0.98 },
 				{ at: 70, ...SHOT_LIST },
-				{ at: duration, ...SHOT_LIST, scale: 1.55 },
+				{ at: duration, ...SHOT_LIST, scale: 1.29 },
 			]}
 		/>
 		<AbsoluteFill style={{ justifyContent: 'flex-end', padding: '0 80px 50px' }}>
@@ -247,15 +247,15 @@ const SecondResultScene = ({ duration }: { duration: number }) => (
 					src: 'todo-2.png',
 					at: 40,
 					marks: [
-						{ at: 80, until: 150, x: 352, y: 204, w: 70, h: 178 },
-						{ at: 150, until: 220, x: 302, y: 203, w: 692, h: 38 },
-						{ at: 220, x: 468, y: 160, w: 80, h: 26 },
+						{ at: 80, until: 150, x: 205, y: 312, w: 97, h: 266 },
+						{ at: 150, until: 220, x: 128, y: 304, w: 1036, h: 56 },
+						{ at: 220, x: 378, y: 238, w: 116, h: 36 },
 					],
 				},
 			]}
 			keys={[
 				{ at: 0, ...SHOT_LIST },
-				{ at: duration, ...SHOT_LIST, scale: 1.58 },
+				{ at: duration, ...SHOT_LIST, scale: 1.31 },
 			]}
 		/>
 		<AbsoluteFill style={{ justifyContent: 'flex-end', padding: '0 80px 50px' }}>
