@@ -239,3 +239,9 @@ html[data-has-hero] .sl-markdown-content :not(h1, h2, h3, h4, h5, h6, .sl-headin
 		min-height: 0;
 	}
 }
+
+/* "On this page" lines up with the sidebar's first item ("Home"), whose text sits lower in its box:
+   the link has 0.3em padding and a taller line than the heading. */
+.right-sidebar-panel h2 {
+	padding-top: 0.33rem;
+}
