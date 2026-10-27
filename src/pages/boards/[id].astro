@@ -40,6 +40,70 @@ The bytes stream straight from the swarm, piece by piece, as the reader asks for
 <p>Magnet links from web pages, <code>.torrent</code> files and <code>.torrent</code> download links all open in the board.
 The status bar of a page that is reading a torrent shows its live peers and download speed.</p>`,
 	},
+	'claude-agent': {
+		heading: 'An agent that lives inside Persephone',
+		html: `<p>Agent Chat is a chat page for the <strong>Claude Code</strong> and <strong>Codex</strong> command line
+applications you already have installed. Each one signs in with your own account, and the board never touches your
+credentials. Choose the engine, model and effort for each new chat. Sessions from both engines share one sidebar,
+grouped by working folder.</p>
+<ul>
+<li><strong>Knows Persephone from the start.</strong> The board ships instructions that tell the agent it is working
+inside Persephone. Before it asks you to paste anything, it reads the pages you have open: the active page, the
+page beside it, a screenshot you pasted. You can edit these instructions for each engine.</li>
+<li><strong>Works with Persephone without any setup.</strong> Each chat gets its own private Persephone MCP endpoint,
+so the agent can read and drive your pages, the browser and boards even when Persephone's MCP server setting is off.
+The endpoint is revoked when the session ends.</li>
+<li><strong>Group chats.</strong> Invite more agents into a conversation: a reviewer, a critic, a researcher, a
+developer, or a profile of your own. Claude and Codex agents can work in the same chat. Each agent keeps its own
+session and model and sees the shared timeline. Every post carries its author's badge, and the main agent
+moderates.</li>
+<li><strong>The terminal's features in a chat page.</strong>
+<ul>
+<li>Auto, Plan and Bypass permission modes, with approval cards</li>
+<li>slash commands, plus <code>/mcp</code> and <code>/context</code> panels</li>
+<li>subagent transcripts, and several sessions running side by side</li>
+<li>usage limits and cost</li>
+<li>it can follow and resume sessions you started in a terminal</li>
+</ul></li>
+<li><strong>Voice input.</strong> With the Speech to Text board installed, the microphone button dictates into the
+message box.</li>
+</ul>
+<p>Agent Chat also provides the <code>agent.session</code> service, so other boards can open agent sessions through it.</p>`,
+	},
+	translate: {
+		heading: 'Translation for all of Persephone',
+		html: `<p>Translate runs Firefox's translation models on your computer and detects the source language for you.
+You download each language direction once, with a click. After that, translation works offline, and your text
+never leaves the computer. A pair without a direct model is translated through English.</p>
+<p>The board's own page translates pasted text. Installing it also adds translation to Persephone itself:</p>
+<ul>
+<li><strong>Browser:</strong> the Translate button on the browser toolbar translates the web page in place.
+One click restores the original text.</li>
+<li><strong>Text Editor:</strong> translate a selection or the whole page into a new tab.</li>
+<li><strong>Other boards</strong> can use the <code>text.translate</code> service for plain text or HTML.</li>
+</ul>
+<p>When a translation needs a model you have not downloaded yet, Persephone asks before downloading anything.</p>`,
+	},
+	'speech-to-text': {
+		heading: 'Local speech recognition for all of Persephone',
+		html: `<p>Speech to Text runs OpenAI's <strong>Whisper</strong> models on your own computer through
+<a href="https://github.com/ggml-org/whisper.cpp">whisper.cpp</a>, and your audio is never uploaded. Whisper was trained on a very
+large amount of multilingual speech, so it copes well with accents and non-native speakers. Choose a model by
+speed and accuracy, from Base up to Large v3 Turbo, and turn on GPU acceleration if your computer has a suitable
+graphics card.</p>
+<p>Installing the board adds speech input to Persephone itself:</p>
+<ul>
+<li><strong>Voice typing:</strong> press <code>Alt+V</code> (or a tap of the right <code>Ctrl</code> key, if you set
+that up) and dictate into whatever input has focus.</li>
+<li><strong>Transcripts in the Text Editor:</strong> record your microphone, the computer's audio, or both, for
+calls, meetings or videos. Text is added to the page as people speak. In <em>Both</em> mode, lines are labeled
+<em>Me</em> and <em>Others</em>.</li>
+<li><strong>Agent Chat:</strong> dictate prompts with the microphone button.</li>
+</ul>
+<p>Short phrases are recognized more accurately when you list the languages you speak in the board's settings. A
+vocabulary prompt helps with names and technical terms. Other boards can use the <code>speech.transcribe</code>
+service.</p>`,
+	},
 };
 const details = boardDetails[board.id];
 const demo = demoClips[board.id];
