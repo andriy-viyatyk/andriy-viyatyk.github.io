@@ -1,0 +1,14 @@
+{
+  "type": "link-editor",
+  "links": [
+    { "id": "t01", "href": "C:\\Demo\\Music\\night-drive.mp3", "title": "Night Drive", "artist": "Velvet Circuit", "album": "Afterhours", "year": 2025, "category": "Electronic/Synthwave", "tags": ["night", "driving"], "rating": 5, "playCount": 14, "duration": 100, "addedAt": "2026-09-02T10:00:00.000Z" },
+    { "id": "t02", "href": "C:\\Demo\\Music\\first-light.mp3", "title": "First Light", "artist": "Aster Vale", "album": "Morning Sets", "year": 2024, "category": "Chill/Lo-fi", "tags": ["morning", "focus"], "rating": 4, "playCount": 9, "duration": 100, "addedAt": "2026-09-03T10:00:00.000Z" },
+    { "id": "t03", "href": "C:\\Demo\\Music\\harbor-lights.mp3", "title": "Harbor Lights", "artist": "Velvet Circuit", "album": "Afterhours", "year": 2025, "category": "Electronic/Synthwave", "tags": ["night"], "rating": 4, "playCount": 11, "duration": 100, "addedAt": "2026-09-02T10:01:00.000Z" },
+    { "id": "t04", "href": "C:\\Demo\\Music\\paper-planes.mp3", "title": "Paper Planes", "artist": "Aster Vale", "album": "Morning Sets", "year": 2024, "category": "Chill/Lo-fi", "tags": ["focus"], "rating": 3, "playCount": 6, "duration": 100, "addedAt": "2026-09-03T10:01:00.000Z" },
+    { "id": "t05", "href": "C:\\Demo\\Music\\glass-city.mp3", "title": "Glass City", "artist": "Glass Atlas", "album": "Skyline", "year": 2026, "category": "Electronic/House", "tags": ["energy"], "rating": 5, "playCount": 17, "duration": 100, "addedAt": "2026-10-20T10:00:00.000Z" },
+    { "id": "t06", "href": "C:\\Demo\\Music\\slow-tide.mp3", "title": "Slow Tide", "artist": "Harbor Static", "album": "Shorelines", "year": 2023, "category": "Ambient", "tags": ["calm", "focus"], "rating": 4, "playCount": 8, "duration": 100, "addedAt": "2026-08-15T10:00:00.000Z" },
+    { "id": "t07", "href": "C:\\Demo\\Music\\copper-sky.mp3", "title": "Copper Sky", "artist": "Harbor Static", "album": "Shorelines", "year": 2023, "category": "Ambient", "tags": ["calm"], "rating": 3, "playCount": 4, "duration": 100, "addedAt": "2026-08-15T10:01:00.000Z" },
+    { "id": "t08", "href": "C:\\Demo\\Music\\northern-wires.mp3", "title": "Northern Wires", "artist": "Glass Atlas", "album": "Skyline", "year": 2026, "category": "Electronic/House", "tags": ["energy", "driving"], "rating": 4, "playCount": 12, "duration": 100, "addedAt": "2026-10-20T10:01:00.000Z" }
+  ],
+  "state": { "audioPlayer": { "categories": ["Ambient", "Chill", "Chill/Lo-fi", "Electronic", "Electronic/House", "Electronic/Synthwave"] } }
+}

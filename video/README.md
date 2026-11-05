@@ -23,6 +23,7 @@ its poster is `<name>.jpg`. Every `render:*` script also converts the MP4 to a l
 | `persephone-install-board-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `install-board-*.js` | `/persephone/boards/installing/` ([page](../src/content/docs/persephone/boards/installing.mdx)) | recorded in Persephone, see its recipe |
 | `persephone-mneme-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `mneme-*.js` | `/persephone/mneme/` ([page](../src/content/docs/persephone/mneme/index.mdx)) | recorded in Persephone, see its recipe |
 | `persephone-gem-keep-demo.mp4` | — (a real screen recording) | [fixtures/gem-keep-demo/scene.js](fixtures/gem-keep-demo/scene.js) | `/boards/gem-keep/` ([template](../src/pages/boards/%5Bid%5D.astro)) | recorded in Persephone, see its recipe |
+| `persephone-audio-player-demo.mp4` | — (a real screen recording) | [fixtures/audio-player-demo/scene.js](fixtures/audio-player-demo/scene.js) | `/boards/audio-player/` ([template](../src/pages/boards/%5Bid%5D.astro)) | recorded in Persephone, see its recipe |
 | `ai-vision-mcp-scale.mp4` | `McpScale` | [src/ai-vision/McpScale.tsx](src/ai-vision/McpScale.tsx) | `/ai-vision/mcp-at-scale/` ([page](../src/content/docs/ai-vision/mcp-at-scale.mdx)) | `npm run render:mcp-scale` |
 | `persephone-site-extensions.mp4` | `SiteExtensions` | [src/persephone/SiteExtensions.tsx](src/persephone/SiteExtensions.tsx) | `/persephone/site-extensions/` ([page](../src/content/docs/persephone/site-extensions/index.mdx)) | `npm run render:site-extensions` |
 
@@ -645,6 +646,40 @@ because a board-mode window shows only the board (no sidebar, tabs or file names
    `npx remotion ffmpeg -ss 2.5 -i <raw> -c:v libx264 -crf 22 -pix_fmt yuv420p -preset slow -r 30 out/persephone-gem-keep-demo.mp4`,
    `node scripts/finish.mjs persephone-gem-keep-demo 20`, `node scripts/gif.mjs persephone-gem-keep-demo 640 10` (~17 MB).
 6. Close window *N*.
+
+## Recipe: Audio Player (screen recording, 49 s)
+
+**What it shows**: the Audio Player board on a demo catalog → callout on the catalog panel →
+**Electronic › Synthwave** → click **Night Drive** to play → callout on the effect picker → **Bars** →
+the panel hidden, **Circular** → **Instruments** (the 3D sea, note lights, lightning; callout) → the
+**Audio effects** popover (equalizer, crossfade, gapless) → end card. Shown on `/boards/audio-player/`
+through the `demoClips` map, like Torrent Viewer.
+
+**Music and catalog**: no real music. [fixtures/audio-player-demo/make-music.py](fixtures/audio-player-demo/make-music.py)
+synthesizes eight 100 s tracks (drums, bass, chords, lead: every Instruments group has something to
+show); encode them to MP3 into `C:\Demo\Music` with `npx remotion ffmpeg -i <wav> -c:a libmp3lame -b:a 192k`.
+Copy [demo.music.link.json](fixtures/audio-player-demo/demo.music.link.json) (made-up titles and
+artists) next to them; copy it again before every take, because playing raises play counts.
+
+1. Back up the board's storage first (`persephone.storage.get("audio-player")` in the board): opening
+   the demo catalog and the take change `playingList`, `catalogPanel` and `catalogSection`. Restore it
+   before closing the window.
+2. `window.openNew` → window *N*; `windows[N].script.execute` with `window.resizeTo(1120, 720)`
+   and `app.pages.openFile("C:\\Demo\\Music\\demo.music.link.json")` (the trusted dev copy of the
+   board opens it). The recording is 1402x900 at 125 %; the encode crops it to 1400.
+3. Install `scripts/demo-overlay.js`, set `window.__TAKE = true`, run
+   [fixtures/audio-player-demo/scene.js](fixtures/audio-player-demo/scene.js) (both as
+   `new AsyncFunction('app', code)(app)`); poll `windows[N].script.result(runId)`. The prelude pauses,
+   closes the list, opens the panel on Category and selects Bars.
+4. `npx remotion ffmpeg -ss 1.5 -i <raw> -vf crop=1400:900:1:0 -c:v libx264 -crf 22 -pix_fmt yuv420p -preset slow -r 30 -an out/ap-normal-speed.mp4`
+   (64 s), then play it 1.3x faster with a second encode, `-itsscale 0.7692 -i out/ap-normal-speed.mp4`
+   and the same output options, to `out/persephone-audio-player-demo.mp4` (49 s, ~13 MB; Remotion's
+   ffmpeg has no setpts filter, `-itsscale` rescales the input timestamps instead).
+   `node scripts/finish.mjs persephone-audio-player-demo 34` (poster: the Instruments sea) and
+   `node scripts/gif.mjs persephone-audio-player-demo 640 10` (~14 MB, under Reddit's 15 MB upload
+   limit; the moving sea costs bits, 720 px at normal speed was 21.6 MB). The site plays the MP4.
+   The recorder captures no sound, so the music only drives the visualizer.
+5. Restore the storage, close window *N*, delete the temp recording.
 
 ## Recipe: Site Extensions (`SiteExtensions`, 44 s)
 
