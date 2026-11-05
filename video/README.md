@@ -22,6 +22,7 @@ its poster is `<name>.jpg`. Every `render:*` script also converts the MP4 to a l
 | `persephone-workspace-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `workspace-*.js` | `/persephone/workspace/` ([page](../src/content/docs/persephone/workspace/index.mdx)) | recorded in Persephone, see its recipe |
 | `persephone-install-board-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `install-board-*.js` | `/persephone/boards/installing/` ([page](../src/content/docs/persephone/boards/installing.mdx)) | recorded in Persephone, see its recipe |
 | `persephone-mneme-demo.mp4` | — (a real screen recording) | [fixtures/feature-demos/](fixtures/feature-demos) `mneme-*.js` | `/persephone/mneme/` ([page](../src/content/docs/persephone/mneme/index.mdx)) | recorded in Persephone, see its recipe |
+| `persephone-gem-keep-demo.mp4` | — (a real screen recording) | [fixtures/gem-keep-demo/scene.js](fixtures/gem-keep-demo/scene.js) | `/boards/gem-keep/` ([template](../src/pages/boards/%5Bid%5D.astro)) | recorded in Persephone, see its recipe |
 | `ai-vision-mcp-scale.mp4` | `McpScale` | [src/ai-vision/McpScale.tsx](src/ai-vision/McpScale.tsx) | `/ai-vision/mcp-at-scale/` ([page](../src/content/docs/ai-vision/mcp-at-scale.mdx)) | `npm run render:mcp-scale` |
 | `persephone-site-extensions.mp4` | `SiteExtensions` | [src/persephone/SiteExtensions.tsx](src/persephone/SiteExtensions.tsx) | `/persephone/site-extensions/` ([page](../src/content/docs/persephone/site-extensions/index.mdx)) | `npm run render:site-extensions` |
 
@@ -614,6 +615,36 @@ for the files to show "verified". **+ Add root** opens the native folder picker,
 window the recording cannot show: scene 2 replaces `app.fs.showFolderDialog` once to return the
 fixture folder. The search box is a contenteditable `[data-name="mneme-search-input"]`, and a
 result title is an `h3 a` with an icon inside (not a leaf, so `__ws.byText` misses it).
+
+## Recipe: Gem Keep (screen recording, 52 s)
+
+**What it shows**: the Gem Keep game board in a board-mode window → callout on the gem vault →
+two Bolt towers and a Mortar built on Green Meadow → wave 1, 2× speed, wave 2 called early → a
+camera close-up of the raiders and towers → a Frost tower, wave 3, a Meteor on the road → a Bolt
+tower upgraded → end card. Shown on `/boards/gem-keep/` through the `demoClips` map, like Torrent
+Viewer.
+
+**How it is made**: real gameplay, recorded by Persephone's own recorder; no demo profile is needed,
+because a board-mode window shows only the board (no sidebar, tabs or file names).
+
+1. `boards.openBoardWindow("C:\projects\persephone-boards\boards\gem-keep")` → a new
+   window *N* (see `windows`); `windows[N].script.execute` with `window.resizeTo(1040, 650)`.
+   The recording is 1300x812 at 125 % display scaling. The pad coordinates in `scene.js` are
+   window CSS pixels for this size and the camera one wheel step in: re-measure them from a
+   screenshot if the size, the level or the game's start camera changes.
+2. Back up the game's storage first (`persephone.storage.get` of `progress`, `difficulty`, `sound`
+   in the board) and select **Easy** in the menu, then start **Green Meadow**. Restore the
+   storage afterwards: the take changes the difficulty, and the author has their own progress.
+3. Install `scripts/demo-overlay.js` in window *N* (it is a function body: run it with
+   `new AsyncFunction('app', code)(app)` after `app.fs.read`).
+4. Run [fixtures/gem-keep-demo/scene.js](fixtures/gem-keep-demo/scene.js) the same way, with
+   `window.__TAKE = true` (a dry run without it). It restarts the level, records and returns
+   `{ log, result }`; the log has the mana before and after the meteor, as a check that it fell.
+   The call outlasts the MCP timeout: poll `windows[N].script.result(runId)`.
+5. Copy the file, then trim the ~2.5 s idle head and re-encode:
+   `npx remotion ffmpeg -ss 2.5 -i <raw> -c:v libx264 -crf 22 -pix_fmt yuv420p -preset slow -r 30 out/persephone-gem-keep-demo.mp4`,
+   `node scripts/finish.mjs persephone-gem-keep-demo 20`, `node scripts/gif.mjs persephone-gem-keep-demo 640 10` (~17 MB).
+6. Close window *N*.
 
 ## Recipe: Site Extensions (`SiteExtensions`, 44 s)
 
