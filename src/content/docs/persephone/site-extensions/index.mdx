@@ -51,10 +51,48 @@ exposes a **model**: the data and actions that matter, such as `tickets`, `read(
 - **Content on request only.** A well-built model lists headers and ids and returns a body only
   when the agent explicitly calls `read(id)`.
 
+## Site actions: one click on the page
+
+_Coming in Persephone 5.0.18._
+
+An extension can also give **you** buttons, not just the agent. It publishes a short menu of
+actions for the page you are on, and Persephone shows a puzzle-piece **Site actions** button inside
+the address bar, next to Translate. Click it, choose an action, and Persephone opens the result in
+the right place:
+
+| The action returns | Persephone opens it in |
+|---|---|
+| A video stream (HLS `.m3u8` or MP4) | its video player; with several streams, you pick one from a list |
+| Markdown | a Markdown view |
+| JSON or CSV rows | a sortable, filterable grid |
+| Plain text | the text editor |
+| A list of links | a links page |
+| A short message | a notification |
+
+Menus can have submenus, so a series page can list its episodes under each audio track. The menu
+follows the page: it appears when the extension recognises the page, and it changes or disappears
+when you navigate away.
+
+A few things people build with it:
+
+- **Release statistics.** On a GitHub repository page, _Show release info_ opens every release file
+  with its date and download count in a grid.
+- **Play the video in Persephone.** On a video page, the extension finds the stream the site's own
+  player would load and opens it in Persephone's player, with each variant or episode as its own
+  menu item.
+- **A report from the page.** Collect what you need from a long page into a Markdown summary.
+
+An extension can read data from another site that the page itself doesn't show, such as a public
+API. It has to list those hosts in its manifest, the **Trust** bar names them, and those requests
+are sent **without your cookies or sign-in**: the extension can read only what anyone could.
+
+Your agent writes these actions too. Ask it: _"add a site action to this page that opens the table
+as a grid"_. The agent can also run the actions itself and read what they return.
+
 ## You stay in control
 
 - **Trust per host.** An extension runs only on the hostnames it lists, after you trust it. If its
-  host list changes, Persephone asks again.
+  host list, or the list of other sites it may read from, changes, Persephone asks again.
 - **Never in private pages.** Site extensions don't run in Incognito or Tor pages.
 - **Easy to switch off.** **Tools & Editors → Site extensions** lists every extension, with a switch
   to disable it, **revoke trust**, open its folder, or remove it.
