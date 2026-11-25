@@ -1,0 +1,233 @@
+---
+title: Web-App Tests
+description: Your AI agent explores your web app in Persephone's browser, then turns what it did into regression tests that run without an LLM, in your real signed-in browser, with a Playwright-like API.
+head:
+  - tag: title
+    content: "Web-app tests – regression tests your AI agent writes in Persephone"
+sidebar:
+  label: Web-App Tests
+  order: 4
+---
+
+Your agent can already open your web app in Persephone's browser, click through it and check what it
+sees. **Web-app tests** keep that work. The agent writes what it did as a small `.test.mjs` file, and
+from then on `persephone-test.exe` replays it: no LLM, no tokens, the same result every run.
+
+The tests run in Persephone on your desktop, in a real browser profile. A test can use the profile
+you're already signed in with, so there's no login script to write and no test account to set up.
+
+_Available since Persephone 5.0.20._
+
+## How it works
+
+1. **The agent explores.** It opens the app with the `call` tool, takes a snapshot, and tries the
+   clicks, inputs and reads the test needs.
+2. **It writes the test.** The same calls go into a `.test.mjs` file:
+   `pages[id].editor.click("#save")` while exploring becomes `site.click("#save")` in the test.
+3. **You run it.** `persephone-test.exe .\web-tests` runs every test in the folder and exits `0`
+   when they all pass, so you can call it from a script or a scheduled task.
+4. **You read the report.** Each run writes `report.md`, a screenshot for each failure, the page's
+   console log (`site-console.log`) and its network log (`network.log`).
+
+## A first test
+
+```js title="orders.test.mjs"
+export default [
+    test("refresh loads the orders", async (ctx) => {
+        // A browser profile where you are already signed in.
+        const site = await ctx.openBrowser("https://app.example.test/orders", {
+            profile: "qa-browser",
+        });
+
+        await site.waitFor({ selector: "[data-testid='orders-dashboard']" });
+        await site.click('role=button[name="Refresh"]');
+
+        // Retry the read until it matches, instead of sleeping.
+        await ctx.expect.poll(() => site.count("role=row"), {
+            message: "The orders table should fill",
+        }).toBeGreaterThan(1);
+
+        ctx.expect(await site.getText("h1")).toBe("Your orders");
+    }),
+];
+```
+
+```powershell
+persephone-test.exe .\orders.test.mjs --profile qa --log-dir .\orders-run
+```
+
+`test`, `ctx.expect` and the hooks (`beforeAll`, `beforeEach`, `afterEach`, `afterAll`) are built in.
+So are `test.only`, `test.skip`, `test.fails` and per-test timeouts. Pages a test opens are closed
+when it ends.
+
+## Familiar if you know Playwright
+
+Persephone isn't Playwright, but most of the vocabulary carries over:
+
+| Playwright | Persephone test |
+|---|---|
+| `page.getByRole("button", { name: "Save" }).click()` | `site.click('role=button[name="Save"]')` |
+| `page.getByLabel("Email").fill(value)` | `site.type("label=Email", value)` |
+| `page.getByTestId("save").click()` | `site.click("testid=save")` |
+| `locator("ul").getByRole("listitem").nth(-1)` | `site.click("ul >> role=listitem >> nth=-1")` |
+| `expect(locator).toHaveText(...)` | `ctx.expect.poll(() => site.getText(locator)).toBe(...)` |
+| `page.route(...)` / `fulfill` / `abort` | `site.route(pattern, { status, body })` or `"abort"` |
+| `addInitScript`, `storageState`, `clock` | the same names |
+
+`fill`, `press`, `goto`, `dblclick` and a few other Playwright names work as aliases too.
+
+### Fake the backend and the clock
+
+```js
+// The next GET returns an empty list; POSTs fail as if the network were down.
+await site.route("**/api/items", { status: 200, body: "[]", contentType: "application/json" },
+    { method: "GET", times: 1 });
+await site.route("**/api/items", "abort", { method: "POST" });
+```
+
+```js
+// Make a job the app schedules for "in 4 minutes" happen now.
+// Install the clock before the app loads, so its timers use fake time.
+const site = await ctx.openBrowser("about:blank");
+await site.clock.install({ now: "2026-01-01T00:00:00Z" });
+await site.navigateAndWait("http://localhost:5173");
+await site.clock.fastForward(4 * 60 * 1000);
+```
+
+The page clipboard (`site.clipboard`), downloads (`site.waitForDownload()`), dialogs and console
+messages can be tested as well.
+
+## Use a session you already have
+
+With `--attach`, tests run in your running Persephone instead of a fresh one. `ctx.usePage()` picks
+up a page you already have open, signed in. When the test ends the page stays open and is left as it
+is.
+
+```js
+import fs from "node:fs/promises";
+
+test("reuse the signed-in session", async (ctx) => {
+    // Save the session once: cookies plus local and session storage.
+    const signedIn = await ctx.usePage({ url: "https://app.example.test/" });
+    const statePath = ctx.file(".local-test-state/auth.json");   // keep this folder git-ignored
+    await fs.writeFile(statePath, JSON.stringify(await signedIn.storageState()));
+
+    // Start a throwaway incognito page with that session.
+    const site = await ctx.openBrowser("https://app.example.test/orders", {
+        storageState: statePath,
+        incognito: true,
+    });
+    await site.waitFor({ selector: "[data-testid='orders-dashboard']" });
+});
+```
+
+## Tests and site extensions
+
+A test that reads the page through selectors breaks whenever the markup changes. A
+[site extension](/persephone/site-extensions/) avoids this: it gives the page a **model**, a few
+named reads and actions such as `heading()` or `items()`. A test can call that model just as your
+agent does, at `site.app`.
+
+The split that works:
+
+- **The extension** knows the page: where the rows are, how to read a cell, which button opens a
+  record. When the markup changes, you fix it in one place.
+- **The test** drives the app (clicks, typing, routes, the clock) and decides what passes, by
+  checking what the model reports.
+
+For a test, the agent attaches the model as a **temporary extension**. It lives only in the test's
+browser page, needs no **Trust** click, and goes away when the page closes. The script uses the
+same runtime as a saved extension, so the code is the same either way.
+
+```js title="model/10-app.js"
+window.__persephoneSiteRuntime.expose({
+    heading() {
+        return document.querySelector("h1").textContent.trim();
+    },
+    items() {
+        return Array.from(
+            document.querySelectorAll("ul[aria-label='Items'] li"),
+            (li) => li.textContent.trim(),
+        );
+    },
+    // Lists what the model offers. Only listed members can be called.
+    aiVision: {
+        kind: "ItemListPage",
+        summary: "The item list page.",
+        members: [
+            { name: "heading", kind: "method", signature: "heading()", summary: "The page heading." },
+            { name: "items", kind: "method", signature: "items()", summary: "Item texts, in order." },
+        ],
+    },
+});
+```
+
+```js title="tests/items.test.mjs"
+const appUrl = "http://localhost:5173";
+
+export default [
+    test("a new item shows up in the list", async (ctx) => {
+        const site = await ctx.openBrowser("about:blank");
+
+        // Attach the model for this host, then load the app.
+        await site.attachTestExtension({
+            host: new URL(appUrl).host,
+            scriptPath: ctx.file("../model"),   // every .js file in the folder, in name order
+            name: "Item list model",
+        });
+        await site.navigateAndWait(appUrl);
+
+        // The model registers just after the page loads: poll the first read.
+        await ctx.expect.poll(() => site.app.heading()).toBe("Items");
+
+        await site.type("label=New item", "Offline check");
+        await site.click('role=button[name="Add item"]');
+
+        await ctx.expect.poll(() => site.app.items(), {
+            message: "The model should report the new item",
+        }).toEqual(["Offline check"]);
+    }),
+];
+```
+
+`scriptPath` can be one file, a list of files, or a folder. The files are read again on every page
+load, so you can edit the model and rerun without attaching it again.
+
+**One model for every day and for tests.** If your agent already built a site extension for the
+app, the test can attach that extension's `extension.js` as is. Its model then serves both your
+agent's daily questions and the regression suite. One limit: a temporary extension can't read from
+other sites, so a model that calls `runtime.fetchText()` needs a page-only version for tests.
+
+## Running the suite
+
+```powershell
+# Write a working starter suite: a mock page, a model, a test and AGENTS.md for your agent.
+persephone-test.exe --init .\web-tests
+
+# Run everything in a separate Persephone profile.
+persephone-test.exe .\web-tests --profile qa --log-dir .\web-test-logs
+
+# Run inside the Persephone you already have open, in a reusable named window.
+persephone-test.exe .\web-tests --attach --window-name app-tests
+
+# Retry flaky tests, pick tests by name, rerun only what failed last time.
+persephone-test.exe .\web-tests --retries 2 --grep "orders"
+persephone-test.exe .\web-tests --rerun-failed
+```
+
+- **Leave it running.** Tests keep full speed on a locked screen, on another virtual desktop
+  (`--desktop`), or in a minimized window. Tests that need the real desktop, such as native file
+  dialogs, mark themselves `requires: ["desktop"]` and are skipped with a reason.
+- **For scripts.** `--reporter json-lines` streams machine-readable events, and `--summary-only`
+  keeps the console short.
+- **Not for headless CI.** The runner needs Windows and Persephone's windows. For a build server, use
+  Playwright.
+
+## Try it
+
+Open your app in Persephone's browser and ask your agent: _"write a regression test for adding an
+item on this page and run it with persephone-test"_. For a page you use every day, ask for a site
+extension first, then: _"use the extension's model in the tests"_.
+
+Your agent doesn't need to know any of this in advance: the full reference ships inside Persephone
+as guides it reads over MCP.

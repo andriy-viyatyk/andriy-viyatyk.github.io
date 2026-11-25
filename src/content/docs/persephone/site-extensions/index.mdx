@@ -89,6 +89,12 @@ are sent **without your cookies or sign-in**: the extension can read only what a
 Your agent writes these actions too. Ask it: _"add a site action to this page that opens the table
 as a grid"_. The agent can also run the actions itself and read what they return.
 
+## Models in regression tests
+
+The same model works in tests. A [web-app test](/persephone/web-app-tests/#tests-and-site-extensions)
+can attach an extension's script to its own browser page and check what the model reports, so the
+test keeps working when the page's markup changes.
+
 ## You stay in control
 
 - **Trust per host.** An extension runs only on the hostnames it lists, after you trust it. If its

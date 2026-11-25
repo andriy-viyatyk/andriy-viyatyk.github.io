@@ -37,6 +37,7 @@ export default defineConfig({
 							],
 						},
 						{ label: 'Site Extensions', slug: 'persephone/site-extensions' },
+						{ label: 'Web-App Tests', slug: 'persephone/web-app-tests' },
 						{ label: 'Mneme', slug: 'persephone/mneme' },
 					],
 				},
