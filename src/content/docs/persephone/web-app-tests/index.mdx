@@ -215,12 +215,15 @@ persephone-test.exe .\web-tests --retries 2 --grep "orders"
 persephone-test.exe .\web-tests --rerun-failed
 ```
 
-- **Leave it running.** Tests keep full speed on a locked screen, on another virtual desktop
-  (`--desktop`), or in a minimized window. Tests that need the real desktop, such as native file
+On Linux, run the installed app with the same options:
+`/opt/persephone/persephone --test ./web-tests --profile qa --log-dir ./web-test-logs`.
+
+- **Leave it running.** Tests keep full speed on a locked screen, on another Windows virtual desktop
+  (`--desktop`, Windows only), or in a minimized window. Tests that need the real desktop, such as native file
   dialogs, mark themselves `requires: ["desktop"]` and are skipped with a reason.
 - **For scripts.** `--reporter json-lines` streams machine-readable events, and `--summary-only`
   keeps the console short.
-- **Not for headless CI.** The runner needs Windows and Persephone's windows. For a build server, use
+- **Not for headless CI.** The runner needs a desktop session and Persephone's windows. For a build server, use
   Playwright.
 
 ## Try it
